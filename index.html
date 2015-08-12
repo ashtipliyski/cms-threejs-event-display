@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Three.js CMS Track Visualiser</title>
+		<script src="lib/jquery-2.1.4.min.js"></script>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/TrackballControls.js"></script>
+		<script src="js/app.js"></script>
+		<style>
+		body {padding: 0; margin:0}
+
+		#ui-container {
+			padding: 0 10px 10px;
+			float: right;
+			width: 180px;
+			background: #ddd;
+			z:10;
+		}
+		
+		#canvas-container {
+			width:700px; height:500px;
+		}
+		#app-container {
+			width: 900px;
+			margin: 0 auto;
+		}
+
+		#app-container {position: relative}
+		#display #inset {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+			border: 1px solid red;
+		};
+
+		.clear {clear:both}
+		</style>
+	</head>
+	<body>
+		<div id="app-container">
+			<h1>CMS Track Visualiser v0.1</h1>
+			<div id="ui-container">
+				<p>Event Summary:</p>				
+				<p>
+					<span>No Tracks: </span><span id="tracks_no">-</span>
+				</p>
+				<p>
+					<span>No Stubs: </span><span id="stubs_no">-</span>
+				</p>
+				<p>
+					<span>No Reconstructions: </span><span id="recons_no"> - </span>
+				</p>
+				
+				<p>Controls:</p>
+				<div>
+					<input type="button" value="x-y" onclick="lookXY();"/>
+					<input type="button" value="x-z" onclick="lookXZ();"/>
+					<input type="button" value="y-z" onclick="lookYZ();"/>
+				</div>
+				<div>
+					<input type="button" value="Load Data" onclick="loadData();"/>
+				</div>
+				<!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
+			</div>
+			<div id="display">
+				<div id="canvas-container"></div>
+				<div id="inset"></div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</body>
+</html>
