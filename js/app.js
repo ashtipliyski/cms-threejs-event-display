@@ -143,7 +143,9 @@ $(function() {
 
 		render();
 
-		load_geometry("barrel.json");
+		// load_geometry("barrel.json");
+		// load_geometry("geom.json");
+		//load_geometry("geometry_half.json");
 		/*
 		load_geometry("barrel1.json");
 		load_geometry("barrel2.json");
@@ -164,8 +166,15 @@ $(function() {
 					// data = data[0];
 					// console.log(data);
 
+					document.detector_modules = [];
+
 					for ( var k in data)
 					{
+						// document.detector_modules.push(data[k]);
+						
+						//if (data[k].identifier.substr(0,1) != "E")
+						//	continue;
+
 
 						var vals = data[k];
 
@@ -174,12 +183,14 @@ $(function() {
 						
 						for (var i in vals['x'])
 						{
-							vertices.push(new THREE.Vector3(vals['x'][i], vals['y'][i], vals['z'][i]));
-							// vertices.push(vals['z'][i], vals['z'][i], vals['z'][i]);
-							// geom.vertices[i].y = vals['y'][i];
-							// geom.vertices[i].z = vals['z'][i];
+							vertices.push(
+								new THREE.Vector3(
+									vals['x'][i], vals['y'][i], vals['z'][i]
+								)
+							);
 						}
-						
+
+						/*
 						var faces = [
 							new THREE.Face3(3, 4, 0),
 							new THREE.Face3(7, 4, 3),
@@ -193,6 +204,21 @@ $(function() {
 							new THREE.Face3(1, 2, 3),
 							new THREE.Face3(5, 2, 1),
 							new THREE.Face3(5, 6, 2)
+						 ];*/
+						
+						var faces = [
+							new THREE.Face3(0, 4, 3),
+							new THREE.Face3(3, 4, 7),
+							new THREE.Face3(3, 7, 2),
+							new THREE.Face3(7, 6, 2),
+							new THREE.Face3(4, 5, 6),
+							new THREE.Face3(6, 7, 4),
+							new THREE.Face3(0, 1, 4),
+							new THREE.Face3(4, 1, 5),
+							new THREE.Face3(0, 3, 1),
+							new THREE.Face3(3, 2, 1),
+							new THREE.Face3(1, 2, 5),
+							new THREE.Face3(2, 6, 5)
 						];
 						 
 						var geom = new THREE.Geometry();
@@ -203,17 +229,27 @@ $(function() {
 
 						var shape = new THREE.Mesh(
 							geom,
-							// new THREE.MeshBasicMaterial({
+							//new THREE.MeshBasicMaterial({
 							new THREE.MeshNormalMaterial({
-								wireframe: false//, color: 0x00ff00
+								//wireframe: true, color: 0x00ff00
 							})
 						);
 
-						scene.add(shape);// return;
+						shape.data = {
+							"mod_id" : data[k].mod_id,
+							"mod_type" : data[k].mod_id,
+							"identifier": data[k].identifier
+						};
+
+						document.detector_modules.push(shape);
+						// scene.add(shape);// return;
 					}
+
+					alert("Geometry Loaded");
+					render();
 				},
 				fail: function(data) {
-					alert("fail");
+					alert("Error loading geometry.");
 				}
 			}
 		);
@@ -239,6 +275,67 @@ $(function() {
 		renderer.render(scene, camera);
 		renderer_i.render(scene_i, camera_i);
 	}
+
+	document.loadGeometry = function ()
+	{
+		load_geometry("geometry_combined.json");
+		document.visible_geoms = {
+			"B1": false,
+			"B2": false,
+			"B3": false,
+			"B4": false,
+			"B5": false,
+			"E1": false,
+			"E2": false,
+			"E3": false,
+			"E4": false,
+			"E5": false,
+			"E-1": false,
+			"E-2": false,
+			"E-3": false,
+			"E-4": false,
+			"E-5": false
+		};
+	};
+
+	document.showGeomElement = function (identifier)
+	{
+		if (document.visible_geoms[identifier]) {
+			return;
+		}
+		
+		for ( var i in document.detector_modules)
+		{
+			var mod = document.detector_modules[i];
+			if (mod.data.identifier == identifier) {
+				scene.add(mod);
+			}
+		}
+		
+		document.visible_geoms[identifier] = true;
+		
+
+		render();
+	};
+	
+	document.hideGeomElement = function (identifier)
+	{
+		if (!document.visible_geoms[identifier]) {
+			return;
+		}
+		
+		for ( var i in document.detector_modules)
+		{
+			var mod = document.detector_modules[i];
+			if (mod.data.identifier == identifier) {
+				scene.remove(mod);
+			}
+		}
+		
+		document.visible_geoms[identifier] = false;		
+
+		render();
+	};
 
 	document.lookXY = function()
 	{

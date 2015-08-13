@@ -126,7 +126,7 @@ with open(raw_filename, "rb") as file:
             ];
             
             obj = {
-            "identifier": identifier,
+                "identifier": identifier,
                 "mod_type": mod_type,
                 "mod_id": mod_id,
                 "sensor_id": sensor_id,
