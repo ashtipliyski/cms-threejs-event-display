@@ -91,7 +91,7 @@ $(function() {
 		// add assets to scene
 		// scene.add(splineObject);
 		scene.add(line);
-		scene.add(plane);
+		// scene.add(plane);
 		// scene.add(mesh);
 
 		renderer = new THREE.WebGLRenderer();
@@ -245,6 +245,7 @@ $(function() {
 						// scene.add(shape);// return;
 					}
 
+					document.geometry_loaded = true;
 					alert("Geometry Loaded");
 					render();
 				},
@@ -297,6 +298,25 @@ $(function() {
 			"E-5": false
 		};
 	};
+
+	$(".geom-controls input.btn").click(function(element){
+
+		if (!document.geometry_loaded) {
+			alert("Please load geometry first.");
+			return;
+		}
+		
+		var target = $(element.currentTarget);
+		
+		if (target.hasClass("active")) {
+			target.removeClass("active");
+			document.hideGeomElement(target.attr("value"));
+		} else {
+			$(element.currentTarget).addClass("active");
+			document.showGeomElement(target.attr("value"));
+		}
+		// alert("clicked");
+	});
 
 	document.showGeomElement = function (identifier)
 	{

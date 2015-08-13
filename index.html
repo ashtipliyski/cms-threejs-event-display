@@ -2,18 +2,29 @@
 <html>
 	<head>
 		<title>Three.js CMS Track Visualiser</title>
-		<script src="lib/jquery-2.1.4.min.js"></script>
-		<script src="lib/three.min.js"></script>
-		<script src="lib/TrackballControls.js"></script>
-		<script src="js/app.js"></script>
+
+		<!-- jQuery -->
+		<script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+		
+		<!-- Bootstrap library -->
+		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.css" />
+		<script type="text/javascript" src="lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+
+		<!-- Three.js library and controls -->
+		<script type="text/javascript" src="lib/three.min.js"></script>
+		<script type="text/javascript" src="lib/TrackballControls.js"></script>
+
+		<!-- Application code -->
+		<script type="text/javascript" src="js/app.js"></script>
 		<style>
 		body {padding: 0; margin:0}
 
 		#ui-container {
 			padding: 0 10px 10px;
 			float: right;
-			width: 180px;
-			background: #ddd;
+			width: 260px;
+			border: 1px;
 			z:10;
 		}
 		
@@ -21,7 +32,7 @@
 			width:700px; height:500px;
 		}
 		#app-container {
-			width: 900px;
+			width: 970px;
 			margin: 0 auto;
 		}
 
@@ -34,6 +45,7 @@
 		};
 
 		.clear {clear:both}
+		.btn-group {margin: 5px auto;}
 		</style>
 	</head>
 	<body>
@@ -53,78 +65,41 @@
 				
 				<p>View Controls:</p>
 				<div>
-					<input type="button" value="x-y" onclick="lookXY();"/>
-					<input type="button" value="x-z" onclick="lookXZ();"/>
-					<input type="button" value="y-z" onclick="lookYZ();"/>
+					<input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
+					<input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
+					<input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
 				</div>
 				<div>
-					<input type="button" value="Load Data" onclick="loadData();"/>
+					<input type="button" class="btn btn-default" value="Load Data" onclick="loadData();"/>
 				</div>
 
-				
-				<p>Geometry Controls:</p>
-				<div>
-					<input type="button" value="show B1" onclick="showGeomElement('B1');"/>
-					<input type="button" value="hide B1" onclick="hideGeomElement('B1');"/>
+
+				<div class="geom-controls">
+					<p>Geometry Controls:</p>
+					<div class="btn-group">
+						<input class="btn btn-default" type="button" value="B1"/>
+						<input class="btn btn-default" type="button" value="B2" />
+						<input class="btn btn-default" type="button" value="B3" />
+						<input class="btn btn-default" type="button" value="B4" />
+						<input class="btn btn-default" type="button" value="B5" />
+					</div>
+					<div class="btn-group">
+						<input class="btn btn-default" type="button" value="E1" />
+						<input class="btn btn-default" type="button" value="E2" />
+						<input class="btn btn-default" type="button" value="E3" />
+						<input class="btn btn-default" type="button" value="E4" />
+						<input class="btn btn-default" type="button" value="E5" />
+					</div>				
+					<div class="btn-group">
+						<input class="btn btn-default" type="button" value="E-1" />
+						<input class="btn btn-default" type="button" value="E-2" />
+						<input class="btn btn-default" type="button" value="E-3" />
+						<input class="btn btn-default" type="button" value="E-4" />
+						<input class="btn btn-default" type="button" value="E-5" />
+					</div>
 				</div>
 				<div>
-					<input type="button" value="show B2" onclick="showGeomElement('B2');"/>
-					<input type="button" value="hide B2" onclick="hideGeomElement('B2');"/>
-				</div>
-				<div>
-					<input type="button" value="show B3" onclick="showGeomElement('B3');"/>
-					<input type="button" value="hide B3" onclick="hideGeomElement('B3');"/>
-				</div>
-				<div>
-					<input type="button" value="show B4" onclick="showGeomElement('B4');"/>
-					<input type="button" value="hide B4" onclick="hideGeomElement('B4');"/>
-				</div>
-				<div>
-					<input type="button" value="show B5" onclick="showGeomElement('B5');"/>
-					<input type="button" value="hide B5" onclick="hideGeomElement('B5');"/>
-				</div>
-				<div>
-					<input type="button" value="show E1" onclick="showGeomElement('E1');"/>
-					<input type="button" value="hide E1" onclick="hideGeomElement('E1');"/>
-				</div>
-				<div>
-					<input type="button" value="show E2" onclick="showGeomElement('E2');"/>
-					<input type="button" value="hide E2" onclick="hideGeomElement('E2');"/>
-				</div>
-				<div>
-					<input type="button" value="show E3" onclick="showGeomElement('E3');"/>
-					<input type="button" value="hide E3" onclick="hideGeomElement('E3');"/>
-				</div>
-				<div>
-					<input type="button" value="show E4" onclick="showGeomElement('E4');"/>
-					<input type="button" value="hide E4" onclick="hideGeomElement('E4');"/>
-				</div>
-				<div>
-					<input type="button" value="show E5" onclick="showGeomElement('E5');"/>
-					<input type="button" value="hide E5" onclick="hideGeomElement('E5');"/>
-				</div>				
-				<div>
-					<input type="button" value="show E-1" onclick="showGeomElement('E-1');"/>
-					<input type="button" value="hide E-1" onclick="hideGeomElement('E-1');"/>
-				</div>
-				<div>
-					<input type="button" value="show E-2" onclick="showGeomElement('E-2');"/>
-					<input type="button" value="hide E-2" onclick="hideGeomElement('E-2');"/>
-				</div>
-				<div>
-					<input type="button" value="show E-3" onclick="showGeomElement('E-3');"/>
-					<input type="button" value="hide E-3" onclick="hideGeomElement('E-3');"/>
-				</div>
-				<div>
-					<input type="button" value="show E-4" onclick="showGeomElement('E-4');"/>
-					<input type="button" value="hide E-4" onclick="hideGeomElement('E-4');"/>
-				</div>
-				<div>
-					<input type="button" value="show E-5" onclick="showGeomElement('E-5');"/>
-					<input type="button" value="hide E-5" onclick="hideGeomElement('E-5');"/>
-				</div>
-				<div>
-					<input type="button" value="Load Geometry" onclick="loadGeometry();"/>
+					<input class="btn btn-default" type="button" value="Load Geometry" onclick="loadGeometry();"/>
 				</div>
 				<!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
 			</div>
