@@ -31,20 +31,20 @@ $(function() {
 		scene = new THREE.Scene();
 
 		camera = new THREE.PerspectiveCamera(
-		//camera = new THREE.OrthographicCamera(
+			//camera = new THREE.OrthographicCamera(
 			45, scene_width / scene_height, 1, 10000
 		);
 		camera.position.set(0, 0 ,1000);
 
 		/*
-		geometry = new THREE.BoxGeometry(200, 200, 200);
-		material = new THREE.MeshNormalMaterial({
-			color: 0xff0000, wireframe: true
-		});
+		 geometry = new THREE.BoxGeometry(200, 200, 200);
+		 material = new THREE.MeshNormalMaterial({
+		 color: 0xff0000, wireframe: true
+		 });
 
-		mesh = new THREE.Mesh(geometry, material);
-		mesh.position.set(300, 300, 300);
-		*/
+		 mesh = new THREE.Mesh(geometry, material);
+		 mesh.position.set(300, 300, 300);
+		 */
 		plane = new THREE.Mesh(
 			new THREE.PlaneGeometry(1000,1000),
 			new THREE.MeshBasicMaterial({
@@ -56,15 +56,13 @@ $(function() {
 		);
 
 		var line_geometry = new THREE.Geometry();
-		/*
-		 line_geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
-		 line_geometry.vertices.push(new THREE.Vector3(0, 10, 0));
-		 line_geometry.vertices.push(new THREE.Vector3(10, 0, 0));
-		 */
+		
 		line_geometry.vertices.push(new THREE.Vector3(0,0,-800));
 		line_geometry.vertices.push(new THREE.Vector3(0,0,800));
 		
-		var line_material = new THREE.LineBasicMaterial({color:0xff0000});
+		var line_material = new THREE.LineBasicMaterial({
+			color:0x888888, linewidth: 5
+		});
 		var line = new THREE.Line(line_geometry, line_material);
 
 
@@ -108,7 +106,7 @@ $(function() {
 		controls.noZoom = false;
 		controls.noPan = false;
 
-		// controls.staticMoving = true;
+		controls.staticMoving = true;
 		// controls.dynamicDampingFactor = 0.03;
 
 		controls.keys = [ 65, 83, 68 ];
@@ -142,40 +140,30 @@ $(function() {
 		scene_i.add( axes );
 
 		render();
-
-		// load_geometry("barrel.json");
-		// load_geometry("geom.json");
-		//load_geometry("geometry_half.json");
-		/*
-		load_geometry("barrel1.json");
-		load_geometry("barrel2.json");
-		load_geometry("barrel3.json");
-		load_geometry("barrel4.json");
-		 */
 	}
 
 	function load_geometry(filename)
 	{
+		var merge_all_geomerties = true;
+		var use_wireframe = false;
+		
+		waitingDialog.show("Loading geometry", {dialogSize: 'sm'});
 		geometry_file = "geometry/" + filename;
-
+		
 		$.ajax(
 			geometry_file,
 			{
 				dataType: "json",
 				success: function(data) {
-					// data = data[0];
-					// console.log(data);
 
 					document.detector_modules = [];
 
+					if (merge_all_geomerties) {
+						var global_geom = new THREE.Geometry();
+					}
+
 					for ( var k in data)
 					{
-						// document.detector_modules.push(data[k]);
-						
-						//if (data[k].identifier.substr(0,1) != "E")
-						//	continue;
-
-
 						var vals = data[k];
 
 						var vertices = [];
@@ -189,22 +177,6 @@ $(function() {
 								)
 							);
 						}
-
-						/*
-						var faces = [
-							new THREE.Face3(3, 4, 0),
-							new THREE.Face3(7, 4, 3),
-							new THREE.Face3(2, 7, 3),
-							new THREE.Face3(2, 6, 7),
-							new THREE.Face3(6, 5, 4),
-							new THREE.Face3(4, 7, 6),
-							new THREE.Face3(4, 1, 0),
-							new THREE.Face3(5, 1, 4),
-							new THREE.Face3(1, 3, 0),
-							new THREE.Face3(1, 2, 3),
-							new THREE.Face3(5, 2, 1),
-							new THREE.Face3(5, 6, 2)
-						 ];*/
 						
 						var faces = [
 							new THREE.Face3(0, 4, 3),
@@ -220,37 +192,56 @@ $(function() {
 							new THREE.Face3(1, 2, 5),
 							new THREE.Face3(2, 6, 5)
 						];
-						 
+						
 						var geom = new THREE.Geometry();
 						geom.vertices = vertices;
 						geom.faces = faces;
-												
+						
 						geom.computeFaceNormals();
 
-						var shape = new THREE.Mesh(
-							geom,
-							//new THREE.MeshBasicMaterial({
-							new THREE.MeshNormalMaterial({
-								//wireframe: true, color: 0x00ff00
-							})
-						);
+						var shape_mesh;
+						
+						if (use_wireframe) {
+							shape_mesh = new THREE.MeshBasicMaterial({
+								wireframe: true, color: 0x00ff00
+							});
+						} else {
+							shape_mesh = new THREE.MeshNormalMaterial();
+						}
+						
+						var shape = new THREE.Mesh(	geom, shape_mesh);
 
 						shape.data = {
 							"mod_id" : data[k].mod_id,
 							"mod_type" : data[k].mod_id,
 							"identifier": data[k].identifier
 						};
-
+						
 						document.detector_modules.push(shape);
-						// scene.add(shape);// return;
+
+						if (merge_all_geomerties) {
+							shape.updateMatrix();
+							global_geom.merge(shape.geometry, shape.matrix);
+						}
 					}
 
+					if (merge_all_geomerties) {
+						scene.add(
+							new THREE.Mesh(
+								global_geom,
+								new THREE.MeshNormalMaterial()
+							)
+						);
+					}
+					
 					document.geometry_loaded = true;
-					alert("Geometry Loaded");
+					waitingDialog.hide();
+
 					render();
 				},
 				fail: function(data) {
 					alert("Error loading geometry.");
+					waitingDialog.hide();
 				}
 			}
 		);
@@ -279,7 +270,12 @@ $(function() {
 
 	document.loadGeometry = function ()
 	{
+		if (document.geometry_loaded) {
+			return;
+		}
+
 		load_geometry("geometry_combined.json");
+		
 		document.visible_geoms = {
 			"B1": false,
 			"B2": false,
@@ -390,6 +386,36 @@ $(function() {
 		camera.lookAt(new THREE.Vector3(0,0,0));
 	};
 
+	document.zoomIn = function ()
+	{
+		console.log("zooming in");
+		camera.position.x -= 0.1 * camera.position.x;
+		camera.position.y -= 0.1 * camera.position.y;
+		camera.position.z -= 0.1 * camera.position.z;
+		camera.updateProjectionMatrix();
+	};
+
+	document.zoomOut = function ()
+	{
+		console.log("zooming out");
+		camera.position.x += 0.1 * camera.position.x;
+		camera.position.y += 0.1 * camera.position.y;
+		camera.position.z += 0.1 * camera.position.z;
+		camera.updateProjectionMatrix();
+	};
+
+	document.moveUp = function ()
+	{
+		camera.position.x += 10;
+		camera.updateProjectionMatrix();
+	};
+
+	document.moveDown = function ()
+	{
+		camera.position.x -= 10;
+		camera.updateProjectionMatrix();
+	};
+
 	document.visualiseEvent = function(tracks, stubs, recons)
 	{
 		
@@ -463,6 +489,8 @@ $(function() {
 			document.event.tracks.push(track);
 			
 			scene.add(track);
+
+			render();
 		}
 	};
 	
@@ -482,7 +510,8 @@ $(function() {
 		}
 
 		var full_filename = "events/" + filename;
-		
+
+		waitingDialog.show("Loading event", {dialogSize: 'sm'});
 		$.ajax(
 			full_filename,
 			{
@@ -497,12 +526,16 @@ $(function() {
 						external_data.tracks, external_data.stubs, external_data.reconstructions
 					);
 
-					document.external_data = external_data;					
+					document.external_data = external_data;
+					
+					waitingDialog.hide();
 				},
 				error: function (data, textstatus, error) {
 					console.log("Loading Test Status: " + textstatus);
 					console.log("Eror: " + error);
 					console.log("Error loading data from " + full_filename);
+					
+					waitingDialog.hide();
 				}
 			}
 		);

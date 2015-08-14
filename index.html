@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.css" />
 		<script type="text/javascript" src="lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="lib/bootstrap-waitingfor.js"></script>
 
 		<!-- Three.js library and controls -->
 		<script type="text/javascript" src="lib/three.min.js"></script>
@@ -49,10 +50,20 @@
 		</style>
 	</head>
 	<body>
+		<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h1>Processing...</h1>
+			</div>
+			<div class="modal-body">
+				<div class="progress progress-striped active">
+					<div class="bar" style="width: 100%;"></div>
+				</div>
+			</div>
+		</div>
 		<div id="app-container">
 			<h1>CMS Track Visualiser v0.1</h1>
 			<div id="ui-container">
-				<p>Event Summary:</p>				
+				<h4>Event Summary:</h4>
 				<p>
 					<span>No Tracks: </span><span id="tracks_no">-</span>
 				</p>
@@ -62,35 +73,71 @@
 				<p>
 					<span>No Reconstructions: </span><span id="recons_no"> - </span>
 				</p>
-				
-				<p>View Controls:</p>
 				<div>
+					<input type="button" class="btn btn-default btn-sm" value="Load Data" onclick="loadData();"/>
+				</div>
+
+				<hr />
+				
+				<h4>View Controls:</h4>
+				<div class="btn-group btn-group-sm">
 					<input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
 					<input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
 					<input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
 				</div>
 				<div>
-					<input type="button" class="btn btn-default" value="Load Data" onclick="loadData();"/>
+					Zoom:
+					<div class="btn-group btn-group-sm">
+  						<button type="button" class="btn btn-default" onclick="zoomIn()"s>
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+						<button type="button" class="btn btn-default" onclick="zoomOut()">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+					</div>
+				</div>
+				<div>
+					<div>
+						Pan:
+						<div class="btn-group btn-group-sm">
+  							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-arrow-left"></span>
+							</button>
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-arrow-right"></span>
+							</button>
+  							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-arrow-up" onclick="moveUp()""></span>
+</button>
+							<button type="button" class="btn btn-default" onclick="moveDown()">
+								<span class="glyphicon glyphicon-arrow-down" ></span>
+							</button>
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-home"></span>
+							</button>
+						</div>
+					</div>
 				</div>
 
+				<hr />
 
 				<div class="geom-controls">
-					<p>Geometry Controls:</p>
-					<div class="btn-group">
+					<h4>Geometry Controls:</h4>
+					<div class="btn-group btn-group-sm">
 						<input class="btn btn-default" type="button" value="B1"/>
 						<input class="btn btn-default" type="button" value="B2" />
 						<input class="btn btn-default" type="button" value="B3" />
 						<input class="btn btn-default" type="button" value="B4" />
 						<input class="btn btn-default" type="button" value="B5" />
 					</div>
-					<div class="btn-group">
+					<div class="btn-group btn-group-sm">
 						<input class="btn btn-default" type="button" value="E1" />
 						<input class="btn btn-default" type="button" value="E2" />
 						<input class="btn btn-default" type="button" value="E3" />
 						<input class="btn btn-default" type="button" value="E4" />
 						<input class="btn btn-default" type="button" value="E5" />
 					</div>				
-					<div class="btn-group">
+					<div class="btn-group btn-group-sm">
 						<input class="btn btn-default" type="button" value="E-1" />
 						<input class="btn btn-default" type="button" value="E-2" />
 						<input class="btn btn-default" type="button" value="E-3" />
@@ -99,7 +146,7 @@
 					</div>
 				</div>
 				<div>
-					<input class="btn btn-default" type="button" value="Load Geometry" onclick="loadGeometry();"/>
+					<input class="btn btn-default btn-sm" type="button" value="Load Geometry" onclick="loadGeometry();"/>
 				</div>
 				<!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
 			</div>
@@ -109,5 +156,6 @@
 			</div>
 			<div class="clear"></div>
 		</div>
+		
 	</body>
 </html>
