@@ -115,14 +115,14 @@ with open(raw_filename, "rb") as file:
                 y_vect.append(prev_r_vect[i] * np.sin(prev_theta_vect[i]));
 
             z_vect = [
-                row[6],
-                row[9],
-                row[12],
-                row[15],
-                row[18],
-                row[21],
-                row[24],
-                row[27]
+                float(row[6]),
+                float(row[9]),
+                float(row[12]),
+                float(row[15]),
+                float(row[18]),
+                float(row[21]),
+                float(row[24]),
+                float(row[27])
             ];
             
             obj = {
@@ -146,8 +146,8 @@ if verbose:
     print "Exporting data";
 
 import json
-with open(outputfile, 'w') as outputfile:
-    json.dump(data, outputfile)
+with open(outputfile, 'w') as o_file:
+    json.dump(data, o_file)
     
     if verbose:
         print "Geometry successfuly exported"

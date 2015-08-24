@@ -14,6 +14,8 @@ $(function() {
 
 	var scene_width = 700;
 	var scene_height = 500;
+
+	var mouse;
 	
 	// scene_width = window.innerWidth;
 	// scene_height = window.innerHeight;
@@ -34,17 +36,17 @@ $(function() {
 			//camera = new THREE.OrthographicCamera(
 			45, scene_width / scene_height, 1, 10000
 		);
+		// camera.position.set(0, 300 ,500);
 		camera.position.set(0, 0 ,1000);
 
-		/*
-		 geometry = new THREE.BoxGeometry(200, 200, 200);
-		 material = new THREE.MeshNormalMaterial({
-		 color: 0xff0000, wireframe: true
-		 });
 
-		 mesh = new THREE.Mesh(geometry, material);
-		 mesh.position.set(300, 300, 300);
-		 */
+		geometry = new THREE.BoxGeometry(200, 200, 200);
+		material = new THREE.MeshNormalMaterial({
+		});
+
+		mesh = new THREE.Mesh(geometry, material);
+		mesh.position.set(300, 300, 300);
+
 		plane = new THREE.Mesh(
 			new THREE.PlaneGeometry(1000,1000),
 			new THREE.MeshBasicMaterial({
@@ -97,6 +99,9 @@ $(function() {
 		// renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.setSize(scene_width, scene_height);
 		
+        container.addEventListener('mousedown', onDocumentMouseDown, false);
+        // document.addEventListener('mousemove', onDocumentMouseMove, false);
+		
 		controls = new THREE.TrackballControls(camera, container);
 
 		controls.rotateSpeed = 4.0;
@@ -114,7 +119,6 @@ $(function() {
 		
 		controls.addEventListener( 'change', render );
 
-		//document.body.appendChild(renderer.domElement);
 		container.appendChild(renderer.domElement);
 
 		// inset elements
@@ -139,12 +143,15 @@ $(function() {
 		axes = new THREE.AxisHelper( 100 );
 		scene_i.add( axes );
 
+		var projector = new THREE.Projector();
+		mouse = new THREE.Vector2();
+
 		render();
 	}
 
 	function load_geometry(filename)
 	{
-		var merge_all_geomerties = true;
+		var merge_all_geomerties = false;
 		var use_wireframe = false;
 		
 		waitingDialog.show("Loading geometry", {dialogSize: 'sm'});
@@ -173,7 +180,7 @@ $(function() {
 						{
 							vertices.push(
 								new THREE.Vector3(
-									vals['x'][i], vals['y'][i], vals['z'][i]
+									parseFloat(vals['x'][i]), parseFloat(vals['y'][i]), parseFloat(vals['z'][i])
 								)
 							);
 						}
@@ -206,7 +213,12 @@ $(function() {
 								wireframe: true, color: 0x00ff00
 							});
 						} else {
-							shape_mesh = new THREE.MeshNormalMaterial();
+							shape_mesh = new THREE.MeshNormalMaterial({
+								color:0x0000ff,
+								transparent: true,
+								opacity: 0.2,
+								side: THREE.DoubleSide
+							});
 						}
 						
 						var shape = new THREE.Mesh(	geom, shape_mesh);
@@ -282,6 +294,7 @@ $(function() {
 			"B3": false,
 			"B4": false,
 			"B5": false,
+			"B6": false,
 			"E1": false,
 			"E2": false,
 			"E3": false,
@@ -316,6 +329,9 @@ $(function() {
 
 	document.showGeomElement = function (identifier)
 	{
+		if (!document.visible_modules) {
+			document.visible_modules = [];
+		}
 		if (document.visible_geoms[identifier]) {
 			return;
 		}
@@ -325,6 +341,7 @@ $(function() {
 			var mod = document.detector_modules[i];
 			if (mod.data.identifier == identifier) {
 				scene.add(mod);
+				document.visible_modules.push(mod);
 			}
 		}
 		
@@ -418,47 +435,36 @@ $(function() {
 
 	document.visualiseEvent = function(tracks, stubs, recons)
 	{
-		
+
 		// put a reference to external method for parsing the data here
 
 		// extract event name
 
 		// extract tracks
-		var tracks_list = tracks;					
-		$("#tracks_no").text(tracks_list.length);
+		// var tracks_list = tracks;					
+		// $("#tracks_no").text(tracks_list.length);
 		
 		// extract reconstructions
-		var reconstructions_list = recons;
-		$("#recons_no").text(reconstructions_list.length);
+		var candidates_list = recons;
+		$("#recons_no").text(candidates_list.length);
 		
 		// extract stubs
-		var stubs_list = stubs;
-		$("#stubs_no").text(stubs_list.length);
+		// var stubs_list = stubs;
+		// $("#stubs_no").text(stubs_list.length);
 
 		document.event = {};
-		document.event.stubs = [];
-		document.event.tracks = [];
-		document.event.reconstructions = [];
+		//document.event.stubs = [];
+		// document.event.tracks = [];
+		document.event.candidates = [];
+		
+		//console.log(tracks_list.length + " tracks found.");
+		console.log(candidates_list.length + " candidates found.");
+		//console.log(stubs_list.length + " stubs found.");
 
-		for( var key in stubs_list)
-		{
-			var x = stubs_list[key][0];
-			var y = stubs_list[key][1];
-			var z = stubs_list[key][2];
-			
-			var s_geometry = new THREE.SphereGeometry(10, 50, 50);
-			
-			var stub = new THREE.Mesh(
-				s_geometry,
-				new THREE.MeshBasicMaterial({color: 0xff0000})
-			);
-			stub.position.set(x, y, z);
+		/*
 
-			document.event.stubs.push(stub);
-
-			scene.add(stub);
-		}
-
+		
+			/*
 		for ( var k in tracks_list)
 		{
 			var v_coords = tracks_list[k];
@@ -474,6 +480,7 @@ $(function() {
 				));
 			}
 
+			// track as a line
 			var curve = new THREE.SplineCurve3(vertices_vect);
 			var geom = new THREE.Geometry();
 			geom.vertices = curve.getPoints(50);
@@ -485,18 +492,180 @@ $(function() {
 					linewidth: 2
 				})
 			);
+			
 
+			 
+			 // track as a tube
+			 // var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
+             // var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(vertices_vect), 60, 1);
+			 // var track = new THREE.Mesh(tubeGeometry, mat);
+			 
+			
 			document.event.tracks.push(track);
+
+			
+			/*
+			 // alternative collision detection mechanism
+
+			 var cube = track;
+			 var originPoint = cube.position.clone();
+			 for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++)
+			 {
+
+
+			 
+			 var s_geometry = new THREE.SphereGeometry(0.5, 50, 50);
+			 var vertex = cube.geometry.vertices[vertexIndex];
+			 var stub = new THREE.Mesh(
+			 s_geometry,
+			 new THREE.MeshBasicMaterial({color: 0x0000ff, transparent:true, opacity:0.1})
+			 );
+			 stub.position.x = vertex.x;
+			 stub.position.y = vertex.y;
+			 stub.position.z = vertex.z;
+			 
+			 // scene.add(stub); 
+
+
+
+			 
+			 if (vertexIndex == 0) continue;
+
+			 var ray = new THREE.Raycaster(cube.geometry.vertices[vertexIndex], cube.geometry.vertices[vertexIndex-1]);
+			 // console.log(ray); continue;
+			 var points = [];
+			 points.push(ray.ray.origin);
+			 points.push(ray.ray.direction);
+			 var mat = new THREE.MeshBasicMaterial({color: 0xff0000});
+             var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(points), 60, 0.1);
+			 var tube = new THREE.Mesh(tubeGeometry, mat);
+			 scene.add(tube); continue;
+			 
+			 var collisionResults = ray.intersectObjects(document.detector_modules);
+			 //
+			 // console.log("detection collision with " + document.detector_modules.length + " modules");
+
+			 if (collisionResults.length > 0) {
+			 console.log("colision found");
+			 for (var i in collisionResults)
+			 {
+			 var obj = collisionResults[i].object;
+
+v			 //console.log(obj);
+
+			 // obj.material.color = 0xff0000;
+			 //obj.material.transparent = true;
+			 //obj.material.opacity = 0.1;
+
+			 scene.add(obj);
+			 
+			 // console.log(collisionResults);
+			 }
+			 continue;
+			 }
+			 }
+			
 			
 			scene.add(track);
-
-			render();
 		}
+			 */
+		
+		for ( var i in candidates_list)
+		{
+			v_coords = candidates_list[i].coords;
+			console.log(v_coords);
+
+			vertices_vect = [];
+			for (var m in v_coords)
+			{
+				vertices_vect.push(new THREE.Vector3(
+					v_coords[m][0],
+					v_coords[m][1],
+					v_coords[m][2]
+				));
+			}
+
+			// track as a line
+			curve = new THREE.SplineCurve3(vertices_vect);
+			geom = new THREE.Geometry();
+			geom.vertices = curve.getPoints(50);
+
+			var cand = new THREE.Line(
+				geom,
+				new THREE.LineBasicMaterial({
+					color: 0x0000ff,
+					linewidth: 4,
+					transparent: true,
+					opacity: 0.5
+				})
+			);
+			
+			document.event.candidates.push(cand);
+			
+			scene.add(cand);
+			// console.log("Cand added");
+			continue;
+
+			var stubs_list = candidates_list[i].stubs;
+
+			for( var key in stubs_list)
+			{
+				
+				var x = stubs_list[key][0];
+				var y = stubs_list[key][1];
+				var z = stubs_list[key][2];
+				
+				var s_geometry = new THREE.SphereGeometry(1.5, 20, 20);
+				
+				var stub = new THREE.Mesh(
+					s_geometry,
+					new THREE.MeshBasicMaterial({color: 0xff0000})
+				);
+				stub.position.set(x, y, z);
+
+				/* 
+				 // detection collision
+				var cube = stub;			
+				var originPoint = cube.position.clone();
+				// console.log(cube.geometry.vertices.length);
+				
+				for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++) {
+					var localVertex = cube.geometry.vertices[vertexIndex].clone();
+					var globalVertex = localVertex.applyMatrix4(cube.matrix);
+					var directionVector = globalVertex.sub(cube.position);
+
+					var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+					var collisionResults = ray.intersectObjects(document.detector_modules);
+					if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+
+						for ( var j in collisionResults ) {
+							
+							var obj = collisionResults[j].object;
+							// obj.material.transparent = true;
+							// obj.material.opacity = 0.5;
+
+							scene.add(obj);
+							
+						}
+					}
+				}
+				 */
+				
+
+				// document.event.stubs.push(stub);
+
+				scene.add(stub);
+				// console.log("Stub added.");
+			}
+		}
+		
+		render();
 	};
 	
 	document.loadData = function ()
 	{
-		var filename = "test.js";
+		//var filename = "test4.js";
+		var filename = "test_full.js";
 
 		document.loadEvent(filename);
 	};
@@ -519,11 +688,11 @@ $(function() {
 				processData: true,
 				success: function(data) {
 					console.log("Data successfuly loaded from " + full_filename);
-					console.log(data);
-					console.log(external_data);
+					//console.log(data);
+					//console.log(external_data);
 
 					document.visualiseEvent(
-						external_data.tracks, external_data.stubs, external_data.reconstructions
+						external_data.tracks, external_data.stubs, external_data.candidates
 					);
 
 					document.external_data = external_data;
@@ -540,4 +709,40 @@ $(function() {
 			}
 		);
 	};
+
+
+	function onDocumentMouseDown (event)
+	{
+
+		// the mouse interaction is currently disabled
+		return;
+		
+		if (!document.geometry_loaded)
+			return;
+
+		var rect = container.getBoundingClientRect();
+
+		var mouse_x_scene = event.clientX - rect.left;
+		var mouse_y_scene = event.clientY - rect.top;
+
+		mouse.x = ( mouse_x_scene / scene_width ) * 2 - 1;
+		mouse.y = (- mouse_y_scene / scene_height ) * 2 + 1;
+		
+		var raycaster = new THREE.Raycaster();
+		raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+
+			console.log(intersects[0]);
+
+            intersects[0].object.material.transparent = true;
+            intersects[0].object.material.opacity = 0.1;
+
+			render();
+        } else {
+			console.log("no intersects");
+		}
+	}
+
 });
