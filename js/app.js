@@ -34,7 +34,7 @@ $(function() {
 
 		camera = new THREE.PerspectiveCamera(
 			//camera = new THREE.OrthographicCamera(
-			45, scene_width / scene_height, 1, 10000
+			45, scene_width / scene_height, 0.0001, 10000
 		);
 		// camera.position.set(0, 300 ,500);
 		camera.position.set(0, 0 ,1000);
@@ -99,7 +99,8 @@ $(function() {
 		// renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.setSize(scene_width, scene_height);
 		
-        container.addEventListener('mousedown', onDocumentMouseDown, false);
+        container.addEventListener('mousedown', onSceneMouseDown, false);
+        container.addEventListener('mousemove', onSceneMouseMove, false);
         // document.addEventListener('mousemove', onDocumentMouseMove, false);
 		
 		controls = new THREE.TrackballControls(camera, container);
@@ -433,7 +434,7 @@ $(function() {
 		camera.updateProjectionMatrix();
 	};
 
-	document.visualiseEvent = function(tracks, stubs, recons)
+	document.visualiseEvent = function(cands)
 	{
 
 		// put a reference to external method for parsing the data here
@@ -445,135 +446,124 @@ $(function() {
 		// $("#tracks_no").text(tracks_list.length);
 		
 		// extract reconstructions
-		var candidates_list = recons;
+		var candidates_list = cands;
 		$("#recons_no").text(candidates_list.length);
-		
-		// extract stubs
-		// var stubs_list = stubs;
-		// $("#stubs_no").text(stubs_list.length);
 
 		document.event = {};
-		//document.event.stubs = [];
-		// document.event.tracks = [];
+
 		document.event.candidates = [];
 		
-		//console.log(tracks_list.length + " tracks found.");
 		console.log(candidates_list.length + " candidates found.");
-		//console.log(stubs_list.length + " stubs found.");
-
 		/*
+		 /*
+		 for ( var k in tracks_list)
+		 {
+		 var v_coords = tracks_list[k];
 
-		
-			/*
-		for ( var k in tracks_list)
-		{
-			var v_coords = tracks_list[k];
+		 
+		 var vertices_vect = [];
+		 for (var j in v_coords)
+		 {
+		 vertices_vect.push(new THREE.Vector3(
+		 v_coords[j][0],
+		 v_coords[j][1],
+		 v_coords[j][2]
+		 ));
+		 }
 
-			
-			var vertices_vect = [];
-			for (var j in v_coords)
-			{
-				vertices_vect.push(new THREE.Vector3(
-					v_coords[j][0],
-					v_coords[j][1],
-					v_coords[j][2]
-				));
-			}
+		 // track as a line
+		 var curve = new THREE.SplineCurve3(vertices_vect);
+		 var geom = new THREE.Geometry();
+		 geom.vertices = curve.getPoints(50);
 
-			// track as a line
-			var curve = new THREE.SplineCurve3(vertices_vect);
-			var geom = new THREE.Geometry();
-			geom.vertices = curve.getPoints(50);
+		 var track = new THREE.Line(
+		 geom,
+		 new THREE.LineBasicMaterial({
+		 color: 0x00ff00,
+		 linewidth: 2
+		 })
+		 );
+		 
 
-			var track = new THREE.Line(
-				geom,
-				new THREE.LineBasicMaterial({
-					color: 0x00ff00,
-					linewidth: 2
-				})
-			);
-			
+		 
+		 // track as a tube
+		 // var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
+         // var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(vertices_vect), 60, 1);
+		 // var track = new THREE.Mesh(tubeGeometry, mat);
+		 
+		 
+		 document.event.tracks.push(track);
 
-			 
-			 // track as a tube
-			 // var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
-             // var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(vertices_vect), 60, 1);
-			 // var track = new THREE.Mesh(tubeGeometry, mat);
-			 
-			
-			document.event.tracks.push(track);
+		 
+		 /*
+		 // alternative collision detection mechanism
 
-			
-			/*
-			 // alternative collision detection mechanism
-
-			 var cube = track;
-			 var originPoint = cube.position.clone();
-			 for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++)
-			 {
+		 var cube = track;
+		 var originPoint = cube.position.clone();
+		 for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++)
+		 {
 
 
-			 
-			 var s_geometry = new THREE.SphereGeometry(0.5, 50, 50);
-			 var vertex = cube.geometry.vertices[vertexIndex];
-			 var stub = new THREE.Mesh(
-			 s_geometry,
-			 new THREE.MeshBasicMaterial({color: 0x0000ff, transparent:true, opacity:0.1})
-			 );
-			 stub.position.x = vertex.x;
-			 stub.position.y = vertex.y;
-			 stub.position.z = vertex.z;
-			 
-			 // scene.add(stub); 
+		 
+		 var s_geometry = new THREE.SphereGeometry(0.5, 50, 50);
+		 var vertex = cube.geometry.vertices[vertexIndex];
+		 var stub = new THREE.Mesh(
+		 s_geometry,
+		 new THREE.MeshBasicMaterial({color: 0x0000ff, transparent:true, opacity:0.1})
+		 );
+		 stub.position.x = vertex.x;
+		 stub.position.y = vertex.y;
+		 stub.position.z = vertex.z;
+		 
+		 // scene.add(stub); 
 
 
 
-			 
-			 if (vertexIndex == 0) continue;
+		 
+		 if (vertexIndex == 0) continue;
 
-			 var ray = new THREE.Raycaster(cube.geometry.vertices[vertexIndex], cube.geometry.vertices[vertexIndex-1]);
-			 // console.log(ray); continue;
-			 var points = [];
-			 points.push(ray.ray.origin);
-			 points.push(ray.ray.direction);
-			 var mat = new THREE.MeshBasicMaterial({color: 0xff0000});
-             var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(points), 60, 0.1);
-			 var tube = new THREE.Mesh(tubeGeometry, mat);
-			 scene.add(tube); continue;
-			 
-			 var collisionResults = ray.intersectObjects(document.detector_modules);
-			 //
-			 // console.log("detection collision with " + document.detector_modules.length + " modules");
+		 var ray = new THREE.Raycaster(cube.geometry.vertices[vertexIndex], cube.geometry.vertices[vertexIndex-1]);
+		 // console.log(ray); continue;
+		 var points = [];
+		 points.push(ray.ray.origin);
+		 points.push(ray.ray.direction);
+		 var mat = new THREE.MeshBasicMaterial({color: 0xff0000});
+         var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(points), 60, 0.1);
+		 var tube = new THREE.Mesh(tubeGeometry, mat);
+		 scene.add(tube); continue;
+		 
+		 var collisionResults = ray.intersectObjects(document.detector_modules);
+		 //
+		 // console.log("detection collision with " + document.detector_modules.length + " modules");
 
-			 if (collisionResults.length > 0) {
-			 console.log("colision found");
-			 for (var i in collisionResults)
-			 {
-			 var obj = collisionResults[i].object;
+		 if (collisionResults.length > 0) {
+		 console.log("colision found");
+		 for (var i in collisionResults)
+		 {
+		 var obj = collisionResults[i].object;
 
-v			 //console.log(obj);
+		 v			 //console.log(obj);
 
-			 // obj.material.color = 0xff0000;
-			 //obj.material.transparent = true;
-			 //obj.material.opacity = 0.1;
+		 // obj.material.color = 0xff0000;
+		 //obj.material.transparent = true;
+		 //obj.material.opacity = 0.1;
 
-			 scene.add(obj);
-			 
-			 // console.log(collisionResults);
-			 }
-			 continue;
-			 }
-			 }
-			
-			
-			scene.add(track);
-		}
-			 */
+		 scene.add(obj);
+		 
+		 // console.log(collisionResults);
+		 }
+		 continue;
+		 }
+		 }
+		 
+		 
+		 scene.add(track);
+		 }
+		 */
 		
 		for ( var i in candidates_list)
 		{
 			v_coords = candidates_list[i].coords;
-			console.log(v_coords);
 
 			vertices_vect = [];
 			for (var m in v_coords)
@@ -594,69 +584,138 @@ v			 //console.log(obj);
 				geom,
 				new THREE.LineBasicMaterial({
 					color: 0x0000ff,
-					linewidth: 4,
+					linewidth: 1,
 					transparent: true,
 					opacity: 0.5
 				})
 			);
+
+			cand.id = i;
+
+			cand.data = {};
+			cand.data.stubs_obj_list = [];
+			cand.data.stubs_coord = candidates_list[i].stubs;
+			cand.data.tp_obj_coords = candidates_list[i].track;
+			console.log(candidates_list[i]);
+			cand.data.tp_obj = {};
+
+			cand.show_info = function ()
+			{
+				console.log("showing info");
+				
+				var stubs_list = this.data.stubs_coord;
+				
+
+				for( var key in stubs_list)
+				{
+					
+					var x = stubs_list[key][0];
+					var y = stubs_list[key][1];
+					var z = stubs_list[key][2];
+					
+					var s_geometry = new THREE.SphereGeometry(1.5, 20, 20);
+					
+					var stub = new THREE.Mesh(
+						s_geometry,
+						new THREE.MeshBasicMaterial({color: 0xff0000})
+					);
+					stub.position.set(x, y, z);
+
+					scene.add(stub);
+
+					this.data.stubs_obj_list.push(stub);
+				}
+
+				var tracks_list = this.data.tp_obj_coords;
+				// console.log(tracks_list);
+				
+				//for ( var k in tracks_list)
+				//{
+				var v_coords = tracks_list;
+
+				
+				var vertices_vect = [];
+				for (var j in v_coords)
+				{
+					vertices_vect.push(new THREE.Vector3(
+						v_coords[j][0],
+						v_coords[j][1],
+						v_coords[j][2]
+					));
+				}
+
+				// track as a line
+				var curve = new THREE.SplineCurve3(vertices_vect);
+				var geom = new THREE.Geometry();
+				geom.vertices = curve.getPoints(50);
+
+				var track = new THREE.Line(
+					geom,
+					new THREE.LineBasicMaterial({
+						color: 0x00ff00,
+						linewidth: 10
+					})
+				);
+
+				scene.remove(scene.children);
+				scene.add(track);
+
+				console.log(track);
+
+				this.data.tp_obj = track;
+				
+				// track as a tube
+				// var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
+				// var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(vertices_vect), 60, 1);
+				// var track = new THREE.Mesh(tubeGeometry, mat);
+				
+				
+				// document.event.tracks.push(track);
+				//}
+				
+			};
+
+			cand.hide_info = function ()
+			{
+				for (var i in this.data.stubs_obj_list)
+				{
+					scene.remove(this.data.stubs_obj_list[i]);
+				}
+
+				scene.remove(this.data.tp_obj);
+				console.log("hiding info");
+			};
 			
 			document.event.candidates.push(cand);
 			
 			scene.add(cand);
 			// console.log("Cand added");
-			continue;
 
-			var stubs_list = candidates_list[i].stubs;
+			/*
 
-			for( var key in stubs_list)
-			{
-				
-				var x = stubs_list[key][0];
-				var y = stubs_list[key][1];
-				var z = stubs_list[key][2];
-				
-				var s_geometry = new THREE.SphereGeometry(1.5, 20, 20);
-				
-				var stub = new THREE.Mesh(
-					s_geometry,
-					new THREE.MeshBasicMaterial({color: 0xff0000})
-				);
-				stub.position.set(x, y, z);
+			 var stubs_list = candidates_list[i].stubs;
 
-				/* 
-				 // detection collision
-				var cube = stub;			
-				var originPoint = cube.position.clone();
-				// console.log(cube.geometry.vertices.length);
-				
-				for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++) {
-					var localVertex = cube.geometry.vertices[vertexIndex].clone();
-					var globalVertex = localVertex.applyMatrix4(cube.matrix);
-					var directionVector = globalVertex.sub(cube.position);
+			 for( var key in stubs_list)
+			 {
+			 
+			 var x = stubs_list[key][0];
+			 var y = stubs_list[key][1];
+			 var z = stubs_list[key][2];
+			 
+			 var s_geometry = new THREE.SphereGeometry(1.5, 20, 20);
+			 
+			 var stub = new THREE.Mesh(
+			 s_geometry,
+			 new THREE.MeshBasicMaterial({color: 0xff0000})
+			 );
+			 stub.position.set(x, y, z);
+			 
+			 // cand.data.stubs_obj_list.push(stub);
 
-					var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
-					var collisionResults = ray.intersectObjects(document.detector_modules);
-					if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-
-						for ( var j in collisionResults ) {
-							
-							var obj = collisionResults[j].object;
-							// obj.material.transparent = true;
-							// obj.material.opacity = 0.5;
-
-							scene.add(obj);
-							
-						}
-					}
-				}
-				 */
-				
-
-				// document.event.stubs.push(stub);
-
-				scene.add(stub);
-				// console.log("Stub added.");
-			}
+			 // scene.add(stub);
+			 // console.log("Stub added.");
+			 }
+			 */
 		}
 		
 		render();
@@ -691,9 +750,8 @@ v			 //console.log(obj);
 					//console.log(data);
 					//console.log(external_data);
 
-					document.visualiseEvent(
-						external_data.tracks, external_data.stubs, external_data.candidates
-					);
+
+					document.visualiseEvent(external_data.candidates);
 
 					document.external_data = external_data;
 					
@@ -711,14 +769,75 @@ v			 //console.log(obj);
 	};
 
 
-	function onDocumentMouseDown (event)
+	function onSceneMouseMove (event)
 	{
-
-		// the mouse interaction is currently disabled
-		return;
-		
-		if (!document.geometry_loaded)
+		if (!document.external_data)
 			return;
+		
+		var rect = container.getBoundingClientRect();
+
+		var mouse_x_scene = event.clientX - rect.left;
+		var mouse_y_scene = event.clientY - rect.top;
+
+		mouse.x = ( mouse_x_scene / scene_width ) * 2 - 1;
+		mouse.y = (- mouse_y_scene / scene_height ) * 2 + 1;
+		
+		var raycaster = new THREE.Raycaster();
+		raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(document.event.candidates, true);
+
+
+		if (document.prev_hover_target) {
+			// document.prev_hover_target.material = document.prev_material;
+			//document.prev_hover_target.material.opacity = document.prev_hover_material.opacity;
+
+			//document.prev_hover_target.material.linewidth = document.prev_hover_material.linewidth;
+			
+			document.prev_hover_target.material.color.setHex(0x0000ff);
+
+			// document.prev_hover_target.object.material = document.prev_material;
+
+			// document.prev_hover_target.object.color = {'r': 0, 'g': 0, 'b':1};
+			scene.remove(document.prev_hover_target);
+			scene.add(document.prev_hover_target);
+
+			// console.log("resetting");
+
+			render();
+		}
+
+		
+        if (intersects.length > 0) {
+
+			var obj = intersects[0].object;
+
+			if (obj == document.prev_target) {
+				return;
+			}
+
+			//var index = obj.id;
+			//document.prev_hover_target = document.event.candidates[index];
+			document.prev_hover_target = obj;
+			document.prev_hover_material = obj.material;
+
+            obj.material.transparent = true;
+			//obj.material.linewidth = 4;
+			//obj.material.opacity = 1;
+
+			obj.material.color.setHex(0xb85423);
+
+			render();
+        }
+	}
+	
+	function onSceneMouseDown (event)
+	{
+		//var document.prev_target;
+		// the mouse interaction is currently disabled
+		// return;
+		
+		//if (!document.geometry_loaded)
+		//return;
 
 		var rect = container.getBoundingClientRect();
 
@@ -730,18 +849,44 @@ v			 //console.log(obj);
 		
 		var raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mouse, camera);
-        var intersects = raycaster.intersectObjects(scene.children, true);
+        var intersects = raycaster.intersectObjects(document.event.candidates, true);
 
         if (intersects.length > 0) {
 
-			console.log(intersects[0]);
+			if (document.prev_target) {
+				// document.prev_target.material = document.prev_material;
+				document.prev_target.material.opacity = document.prev_material.opacity;
+				document.prev_target.material.linewidth = document.prev_material.linewidth;
+				document.prev_target.material.color.setHex(0x0000ff);
 
-            intersects[0].object.material.transparent = true;
-            intersects[0].object.material.opacity = 0.1;
+				scene.remove(document.prev_target);
+				scene.add(document.prev_target);
+
+				document.prev_target.hide_info();
+
+				render();
+			}
+
+			var obj = intersects[0].object;
+
+			//var index = intersects[0].object.id;
+			//document.prev_target = document.event.candidates[index];
+			document.prev_target = obj;
+			document.prev_material = obj.material;
+
+			obj.show_info();
+
+            obj.material.transparent = true;
+            obj.material.opacity = 0.9;
+			obj.material.linewidth = 3;
+			obj.material.color.setHex(0xaa00dd);
+
+			document.prev_hover_target = null;
 
 			render();
+			console.log("clicked");
         } else {
-			console.log("no intersects");
+			// console.log("no intersects");
 		}
 	}
 
