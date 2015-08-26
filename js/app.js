@@ -560,10 +560,17 @@ $(function() {
 		 scene.add(track);
 		 }
 		 */
+
+		visualise_points = false;
 		
 		for ( var i in candidates_list)
 		{
 			v_coords = candidates_list[i].coords;
+
+			if (v_coords.length == 0) {
+				console.log("no coords found");
+				continue;
+			}
 
 			vertices_vect = [];
 			for (var m in v_coords)
@@ -573,6 +580,22 @@ $(function() {
 					v_coords[m][1],
 					v_coords[m][2]
 				));
+
+				
+				if (visualise_points) {
+					
+					var point = new THREE.Mesh(
+						new THREE.SphereGeometry(1.5, 20, 20),
+						new THREE.MeshBasicMaterial({color: 0x000000})
+					);
+					point.position.set(
+						v_coords[m][0],
+						v_coords[m][1],
+						v_coords[m][2]
+					);
+
+					scene.add(point);
+				}
 			}
 
 			// track as a line
@@ -584,24 +607,33 @@ $(function() {
 				geom,
 				new THREE.LineBasicMaterial({
 					color: 0x0000ff,
-					linewidth: 1,
+					linewidth: 2,
 					transparent: true,
 					opacity: 0.5
 				})
 			);
 
+
+			var obj = candidates_list[i];
 			cand.id = i;
 
 			cand.data = {};
 			cand.data.stubs_obj_list = [];
-			cand.data.stubs_coord = candidates_list[i].stubs;
-			cand.data.tp_obj_coords = candidates_list[i].track;
-			console.log(candidates_list[i]);
+			cand.data.stubs_coord = obj.stubs;
+			cand.data.tp_obj_coords = obj.track;
 			cand.data.tp_obj = {};
+
+			cand.data.pt = obj.pt;
+			cand.data.q = obj.q;
+			cand.data.eta = obj.eta;
+			cand.data.phi0 = obj.phi0;
+
+			document.add_candidate(cand);
 
 			cand.show_info = function ()
 			{
 				console.log("showing info");
+				console.log(this.data);
 				
 				var stubs_list = this.data.stubs_coord;
 				
@@ -633,36 +665,40 @@ $(function() {
 				//{
 				var v_coords = tracks_list;
 
-				
-				var vertices_vect = [];
-				for (var j in v_coords)
-				{
-					vertices_vect.push(new THREE.Vector3(
-						v_coords[j][0],
-						v_coords[j][1],
-						v_coords[j][2]
-					));
+				if (tracks_list.length > 0) {
+					var vertices_vect = [];
+					for (var j in v_coords)
+					{
+						vertices_vect.push(new THREE.Vector3(
+							v_coords[j][0],
+							v_coords[j][1],
+							v_coords[j][2]
+						));
+					}
+
+					console.log(tracks_list);
+					// track as a line
+					var curve = new THREE.SplineCurve3(vertices_vect);
+					var geom = new THREE.Geometry();
+					geom.vertices = curve.getPoints(50);
+
+					var track = new THREE.Line(
+						geom,
+						new THREE.LineBasicMaterial({
+							color: 0x00ff00,
+							linewidth: 10
+						})
+					);
+
+					scene.remove(scene.children);
+					scene.add(track);
+					
+					this.data.tp_obj = track;
+
+				} else {
+					console.log("no tp for particle");
+
 				}
-
-				// track as a line
-				var curve = new THREE.SplineCurve3(vertices_vect);
-				var geom = new THREE.Geometry();
-				geom.vertices = curve.getPoints(50);
-
-				var track = new THREE.Line(
-					geom,
-					new THREE.LineBasicMaterial({
-						color: 0x00ff00,
-						linewidth: 10
-					})
-				);
-
-				scene.remove(scene.children);
-				scene.add(track);
-
-				console.log(track);
-
-				this.data.tp_obj = track;
 				
 				// track as a tube
 				// var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
@@ -717,6 +753,8 @@ $(function() {
 			 }
 			 */
 		}
+
+		document.attach_table_events(scene, render);
 		
 		render();
 	};
@@ -788,11 +826,15 @@ $(function() {
 
 
 		if (document.prev_hover_target) {
+
+			document.reset_candidate(document.prev_hover_target, scene, render);
+			
 			// document.prev_hover_target.material = document.prev_material;
 			//document.prev_hover_target.material.opacity = document.prev_hover_material.opacity;
 
 			//document.prev_hover_target.material.linewidth = document.prev_hover_material.linewidth;
-			
+
+			/*
 			document.prev_hover_target.material.color.setHex(0x0000ff);
 
 			// document.prev_hover_target.object.material = document.prev_material;
@@ -804,6 +846,7 @@ $(function() {
 			// console.log("resetting");
 
 			render();
+			 */
 		}
 
 		
@@ -815,6 +858,9 @@ $(function() {
 				return;
 			}
 
+			document.highlight_candidate(obj, scene, render);
+
+			/*
 			//var index = obj.id;
 			//document.prev_hover_target = document.event.candidates[index];
 			document.prev_hover_target = obj;
@@ -827,6 +873,7 @@ $(function() {
 			obj.material.color.setHex(0xb85423);
 
 			render();
+			*/
         }
 	}
 	
@@ -854,6 +901,9 @@ $(function() {
         if (intersects.length > 0) {
 
 			if (document.prev_target) {
+
+				document.reset_click_candidate(document.prev_target, scene, render);
+				/*
 				// document.prev_target.material = document.prev_material;
 				document.prev_target.material.opacity = document.prev_material.opacity;
 				document.prev_target.material.linewidth = document.prev_material.linewidth;
@@ -865,9 +915,13 @@ $(function() {
 				document.prev_target.hide_info();
 
 				render();
+				 */
 			}
 
 			var obj = intersects[0].object;
+
+			document.select_candidate(obj, scene, render);
+				/*
 
 			//var index = intersects[0].object.id;
 			//document.prev_target = document.event.candidates[index];
@@ -884,7 +938,7 @@ $(function() {
 			document.prev_hover_target = null;
 
 			render();
-			console.log("clicked");
+			console.log("clicked");*/
         } else {
 			// console.log("no intersects");
 		}
