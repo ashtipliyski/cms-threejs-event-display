@@ -5,11 +5,12 @@
 
 		<!-- jQuery -->
 		<script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="lib/jquery.tablesorter.combined.js"></script>
 		
 		<!-- Bootstrap library -->
-		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="lib/bootstrap-3.3.5-dist/css/bootstrap.css" />
-		<script type="text/javascript" src="lib/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="lib/bootstrap-3.3.5-mod/css/bootstrap.min.css" />
+		<!-- <link rel="stylesheet" href="lib/bootstrap-3.3.5-mod/css/bootstrap.css" /> -->
+		<script type="text/javascript" src="lib/bootstrap-3.3.5-mod/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="lib/bootstrap-waitingfor.js"></script>
 
 		<!-- Three.js library and controls -->
@@ -49,14 +50,11 @@
 
 		#candidates-table {
 			margin: 0 2px 0 0;
+			padding: 0 5px;
 		}
 
 		#candidates-table tbody td, #candidates-table thead th {
 			text-align: right;
-		}
-
-		#candidates-table{
-			padding: 0 5px;
 		}
 
 		#cand-table-container {
@@ -81,11 +79,11 @@
 			</div>
 		</div>
 		<div id="app-container">
-			<h1>CMS Track Visualiser v0.2</h1>
+			<h1>CMS Track Visualiser v0.3</h1>
 			<div id="ui-container" id="control-tabs">
 				<ul class="nav nav-tabs nav-justified">
-					<li role="presentation">
-						<a href="#event-controls" class="active" role="tab" data-toggle="tab">Event</a>
+					<li role="presentation" class="active">
+						<a href="#event-controls"role="tab" data-toggle="tab">Event</a>
 					</li>
 					<li role="presentation">
 						<a href="#geometry-controls" role="tab" data-toggle="tab">Geometry</a>
@@ -109,14 +107,17 @@
 							<!-- <div class="panel-body">
 								The following is a list of all the loaded candidate tracks from event.
 							</div> -->
+
 							<div id="cand-table-container">
-							<table id="candidates-table" class="table table-condensed table-hover" >
+							<table id="candidates-table" class="table table-condensed table-hover tablesorter">
 								<thead>
 									<th>#</th>
 									<th>Pt</th>
 									<th>q</th>
 									<th>eta</th>
 									<th>phi0</th>
+									<th>tp?</th>
+									<th>stubs</th>
 								</thead>
 								<tbody></tbody>
 							</table>

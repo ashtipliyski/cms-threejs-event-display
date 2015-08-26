@@ -8,14 +8,15 @@ $(function(){
 		$("#candidates-table tbody tr").hover(function (e){
 			// handlerIn
 
-			var cand_id = $(this).children("td:first").html();
+			var cand_id = parseInt($(this).children("td:first").html()) - 1;
+			console.log(cand_id);
 			var cand = document.event.candidates[cand_id];
 
 			document.highlight_candidate(cand, scene, render);
 		}, function (e) {
 			// handlerOut
 
-			var cand_id = $(this).children("td:first").html();
+			var cand_id = parseInt($(this).children("td:first").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 			
 			document.reset_candidate(cand, scene, render);
@@ -23,11 +24,14 @@ $(function(){
 
 		$("#candidates-table tbody tr").click(function(){
 			
-			var cand_id = $(this).children("td:first").html();
+			var cand_id = parseInt($(this).children("td:first").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 
 			document.select_candidate(cand, scene, render);
 		});
+
+		
+		// $("#candidates-table").tablesorter();
 	};
 
 	document.add_candidate = function (cand)
@@ -38,19 +42,51 @@ $(function(){
 
 		var r = new Array(), j = -1;
 		//for (var key=0, size=data.length; key<size; key++){
-		r[++j] ='<tr><td class="int" scope="row">';
-		r[++j] = cand.id;
-		r[++j] = '</td><td class="fl">';
-		r[++j] = cand.data.pt.toFixed(3);
-		r[++j] = '</td><td class="int">';
+
+
+		var class_name = '';
+
+		/*
+<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Tooltip on left">Tooltip on left</button>
+		 */
+
+		var tooltip_str = '';
+
+		if (cand.data.tp_data) {
+			tooltip_str += 'True particle: \n';
+			tooltip_str += 'pt = ' + cand.data.tp_data.pt.toFixed(2) + ' GeV/c; ';
+			tooltip_str += 'q = ' + cand.data.tp_data.q.toFixed(0) + 'e; ';
+			tooltip_str += 'eta = ' + cand.data.tp_data.eta.toFixed(2) + '; ';
+			tooltip_str += 'phi0 = ' + cand.data.tp_data.phi0.toFixed(2) + '; ';
+			tooltip_str += 'm = '+ cand.data.tp_data.m.toFixed(2) + ' GeV/c^2 ; ';
+		}
+		
+		r[++j] = '<tr id="el-' + cand.data.id + '" class="'+class_name+'" data-toggle="tooltip" data-placement="left" title="' + tooltip_str + '">';
+		r[++j] = '<td class="int" scope="row">';
+		r[++j] = parseInt(cand.data.id) + 1;
+		r[++j] = '</td><td class="fl" title="'+cand.data.pt.toFixed(4)+'"><small>';
+		r[++j] = cand.data.pt.toFixed(2);
+		r[++j] = '</small></td><td class="int"><small>';
 		r[++j] = cand.data.q.toFixed(0);
-		r[++j] = '</td><td class="fl">';
-		r[++j] = cand.data.eta.toFixed(3);
-		r[++j] = '</td><td class="fl">';
-		r[++j] = cand.data.phi0.toFixed(3);
-		r[++j] = '</td></tr>';
+		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = cand.data.eta.toFixed(2);
+		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = cand.data.phi0.toFixed(2);
+		r[++j] = '</small></td><td class="fl"><small>';
+		console.log(cand.data);
+		if (cand.data.tp_obj_coords) {
+			r[++j] = "y";
+		} else {
+			r[++j] = "n";
+		}
+		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = cand.data.stubs_coord.length;
+		r[++j] = '</small></td></tr>';
 		//}
-		$('#candidates-table tbody').append(r.join('')); 
+		
+		$('#candidates-table tbody').append(r.join(''));
+		$('[data-toggle="tooltip"]').tooltip();
+		
 	};
 	
 	document.highlight_candidate = function (cand, scene, render)
@@ -91,6 +127,8 @@ $(function(){
 
 		document.prev_hover_target = null;
 
+		$("#candidates-table tr#el-" + cand.data.id).addClass("info");
+
 		render();
 	};
 
@@ -104,6 +142,9 @@ $(function(){
 		scene.add(cand);
 
 		cand.hide_info();
+
+		
+		$("#candidates-table tr#el-" + cand.data.id).removeClass("info");
 
 		render();
 	};

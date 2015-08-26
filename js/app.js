@@ -569,6 +569,8 @@ $(function() {
 
 			if (v_coords.length == 0) {
 				console.log("no coords found");
+				
+				document.event.candidates.push({});
 				continue;
 			}
 
@@ -613,14 +615,24 @@ $(function() {
 				})
 			);
 
-
 			var obj = candidates_list[i];
-			cand.id = i;
 
 			cand.data = {};
+			
+			cand.data.id = i;
+			
 			cand.data.stubs_obj_list = [];
 			cand.data.stubs_coord = obj.stubs;
-			cand.data.tp_obj_coords = obj.track;
+			cand.data.tp_obj_coords = obj.track.coords;
+			if (obj.track.coords) {
+				cand.data.tp_data = {};
+				cand.data.tp_data.pt = obj.track.pt;
+				cand.data.tp_data.phi0 = obj.track.phi0;
+				cand.data.tp_data.eta = obj.track.eta;
+				cand.data.tp_data.m = obj.track.m;
+				cand.data.tp_data.theta = obj.track.theta;
+				cand.data.tp_data.q = obj.track.q;
+			}
 			cand.data.tp_obj = {};
 
 			cand.data.pt = obj.pt;
@@ -632,11 +644,7 @@ $(function() {
 
 			cand.show_info = function ()
 			{
-				console.log("showing info");
-				console.log(this.data);
-				
 				var stubs_list = this.data.stubs_coord;
-				
 
 				for( var key in stubs_list)
 				{
@@ -663,6 +671,7 @@ $(function() {
 				
 				//for ( var k in tracks_list)
 				//{
+
 				var v_coords = tracks_list;
 
 				if (tracks_list.length > 0) {
@@ -676,7 +685,6 @@ $(function() {
 						));
 					}
 
-					console.log(tracks_list);
 					// track as a line
 					var curve = new THREE.SplineCurve3(vertices_vect);
 					var geom = new THREE.Geometry();
@@ -719,7 +727,7 @@ $(function() {
 				}
 
 				scene.remove(this.data.tp_obj);
-				console.log("hiding info");
+				// console.log("hiding info");
 			};
 			
 			document.event.candidates.push(cand);
@@ -762,7 +770,8 @@ $(function() {
 	document.loadData = function ()
 	{
 		//var filename = "test4.js";
-		var filename = "test_full.js";
+		var filename = "test50.js";
+		//var filename = "test_full.js";
 
 		document.loadEvent(filename);
 	};
