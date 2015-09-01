@@ -1,6 +1,12 @@
 $(function(){
 
 	$("#control-tabs a:last").tab("show");
+	// $('#candidates-table').fixedHeaderTable({footer:true, cloneHeadtoFoot:true, fixedColumn:false});
+
+	var sorter_function = function (node)
+	{
+		return node.childNodes[0].innerHTML;
+	};
 
 	document.attach_table_events = function (scene, render)
 	{
@@ -8,30 +14,56 @@ $(function(){
 		$("#candidates-table tbody tr").hover(function (e){
 			// handlerIn
 
-			var cand_id = parseInt($(this).children("td:first").html()) - 1;
-			console.log(cand_id);
+			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
+			console.log(cand_id);
 
 			document.highlight_candidate(cand, scene, render);
 		}, function (e) {
 			// handlerOut
 
-			var cand_id = parseInt($(this).children("td:first").html()) - 1;
+			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 			
 			document.reset_candidate(cand, scene, render);
 		});
 
-		$("#candidates-table tbody tr").click(function(){
+		$("#candidates-table tbody tr").click(function(e){
+			e.stopPropagation();
+			e.preventDefault();
 			
-			var cand_id = parseInt($(this).children("td:first").html()) - 1;
+			
+			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 
+			if ($(this) != $(this).find("td input[type='checkbox']")) {
+				if ($(this).find("td input[type='checkbox']").prop("checked")) {
+					$(this).find("td input[type='checkbox']").prop("checked", false);
+					$(this).find("span.hidden").html("0");
+				} else {
+					$(this).find("td input[type='checkbox']").prop("checked", true);
+					$(this).find("span.hidden").html("1");
+				}
+			} 
+
+			
+			// console.log($(this).find("td input")[0]);
+			
 			document.select_candidate(cand, scene, render);
 		});
 
+		// configure tablesorter bootstrap theme
 		
-		// $("#candidates-table").tablesorter();
+		$("#candidates-table").tablesorter({
+			textExtraction: sorter_function/*,
+			theme:'default',
+			widthFixed: false,
+			headerTemplate:'{content}{icon}',
+			widgets: ['stickyHeaders'],
+			widgetOptions: {
+				stickyHeaders_attachTo: '#cand-table-container'
+			}*/
+		});
 	};
 
 	document.add_candidate = function (cand)
@@ -46,6 +78,9 @@ $(function(){
 
 		var class_name = '';
 
+		if (!cand.data.tp_obj_coords) {
+			class_name += ' danger';
+		}
 		/*
 <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Tooltip on left">Tooltip on left</button>
 		 */
@@ -62,18 +97,26 @@ $(function(){
 		}
 		
 		r[++j] = '<tr id="el-' + cand.data.id + '" class="'+class_name+'" data-toggle="tooltip" data-placement="left" title="' + tooltip_str + '">';
-		r[++j] = '<td class="int" scope="row">';
+		r[++j] = '<td scope="row"><small class="hidden">0</small><input id="box-' + cand.data.id + '" type="checkbox"></td>';
+		r[++j] = '<td class="int id-cell"><small>';
 		r[++j] = parseInt(cand.data.id) + 1;
-		r[++j] = '</td><td class="fl" title="'+cand.data.pt.toFixed(4)+'"><small>';
+		r[++j] = '</small></td><td class="fl" title="'+cand.data.pt.toFixed(5)+'"><small>';
 		r[++j] = cand.data.pt.toFixed(2);
 		r[++j] = '</small></td><td class="int"><small>';
 		r[++j] = cand.data.q.toFixed(0);
-		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = '</small></td><td class="fl" title="' +
+			cand.data.eta.toFixed(5) + '"><small>';
 		r[++j] = cand.data.eta.toFixed(2);
-		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = '</small></td><td class="fl" title="' +
+			cand.data.phi0.toFixed(5) + '"><small>';
 		r[++j] = cand.data.phi0.toFixed(2);
 		r[++j] = '</small></td><td class="fl"><small>';
-		console.log(cand.data);
+		r[++j] = cand.data.dphi.toFixed(0);
+		r[++j] = '</small></td><td class="fl"><small>';
+		r[++j] = cand.data.deta.toFixed(0);
+		r[++j] = '</small></td>';
+
+		/*
 		if (cand.data.tp_obj_coords) {
 			r[++j] = "y";
 		} else {
@@ -81,6 +124,7 @@ $(function(){
 		}
 		r[++j] = '</small></td><td class="fl"><small>';
 		r[++j] = cand.data.stubs_coord.length;
+		 */
 		r[++j] = '</small></td></tr>';
 		//}
 		
@@ -91,6 +135,11 @@ $(function(){
 	
 	document.highlight_candidate = function (cand, scene, render)
 	{
+
+		if (document.prev_click_target == cand) {
+			return;
+		}
+		
 		//var index = cand.id;
 		//document.prev_hover_target = document.event.candidates[index];
 		document.prev_hover_target = cand;
@@ -102,6 +151,10 @@ $(function(){
 
 		// cand.material.color.setHex(0xb85423);
 		cand.material.color.setHex(0xff0000);
+
+		$("#focus-panel .panel-body #highlighted-tr").html(
+			"Track " + cand.get_info_text()
+		);
 		
 		render();
 	};
@@ -110,7 +163,9 @@ $(function(){
 	{
 		if (document.prev_click_target)
 		{
-			document.reset_click_candidate(document.prev_click_target, scene, render);
+			document.reset_click_candidate(
+				document.prev_click_target, scene, render
+			);
 		}
 		
 		//var index = intersects[0].candect.id;
@@ -122,20 +177,23 @@ $(function(){
 
         cand.material.transparent = true;
         cand.material.opacity = 0.9;
-		cand.material.linewidth = 3;
+		cand.material.linewidth = 5;
 		cand.material.color.setHex(0xaa00dd);
 
 		document.prev_hover_target = null;
 
 		$("#candidates-table tr#el-" + cand.data.id).addClass("info");
+		$("#focus-panel .panel-body #selected-tr").html(
+			"Track " + cand.get_info_text()
+		);
 
 		render();
 	};
 
 	document.reset_click_candidate = function (cand, scene, render)
 	{
-		cand.material.opacity = document.prev_material.opacity;
-		cand.material.linewidth = document.prev_material.linewidth;
+		cand.material.opacity = 0.2; //document.prev_material.opacity;
+		cand.material.linewidth = 2;//document.prev_material.linewidth;
 		cand.material.color.setHex(0x0000ff);
 
 		scene.remove(cand);
@@ -145,6 +203,8 @@ $(function(){
 
 		
 		$("#candidates-table tr#el-" + cand.data.id).removeClass("info");
+		
+		$("#focus-panel .panel-body #selected-tr").html("&nbsp;");
 
 		render();
 	};
@@ -159,7 +219,7 @@ $(function(){
 		
 		//cand.material.linewidth = document.prev_hover_material.linewidth;
 
-		cand.material.opacity = 0.5;
+		cand.material.opacity = 0.2;
 		cand.material.linewidth = 2;
 		cand.material.color.setHex(0x0000ff);
 
@@ -172,6 +232,7 @@ $(function(){
 		 */
 
 		cand.hide_info();
+		$("#focus-panel .panel-body #highlighted-tr").html("-- no focus --");
 
 		render();
 	};

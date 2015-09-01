@@ -1,0 +1,74 @@
+body {padding: 0; margin:0}
+
+#ui-container {
+	/*padding: 0 10px 10px;*/
+	padding-top:10px;
+	float: right;
+	width: 290px;
+	border: 1px;
+	z:10;
+}
+
+#canvas-container {
+	width:700px; height:500px;
+}
+#app-container {
+	width: 1000px;
+	margin: 0 auto;
+}
+
+#app-container {position: relative}
+#display #inset {
+	position: absolute;
+	bottom: 140px;
+	left: 10px;
+	border: 1px solid #666;
+}
+
+#candidates-table {
+	/*
+			   margin: 0 2px 0 0;
+			   padding: 0 5px;
+   */
+	margin-bottom:0px;
+}
+
+#candidates-table tbody td,
+#candidates-table thead th,
+#candidates-table tfoot th {
+	text-align: center;
+}
+
+#candidates-table tbody td[scope='row'] {padding-left: 10px;}
+
+#candidates-table td:last-child,
+#candidates-table th:last-child {
+	padding-right: 15px;
+}
+
+#candidates-table-sticky
+{
+	background: white;
+}
+
+#cand-table-container {
+
+	position:relative;
+	height:450px;
+	/*max-height: 460px;*/
+	overflow-y: auto;
+}
+
+#cand-panel {margin-bottom: 5px !important;}
+
+#focus-panel {
+	margin-top:10px;
+	margin-bottom: 10px !important;
+
+	width: 700px;
+}
+
+.font-bold {text-weight: bold;}
+.clear {clear:both;}
+.btn-group {margin: 5px auto;}
+.hidden {display: none;}

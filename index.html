@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<title>Three.js CMS Track Visualiser</title>
+		<title>Three.js CMS Track Visualiser v0.4</title>
+		<meta charset="utf-8">
+		
+		<!-- Application styles -->
+		<link rel="stylesheet" href="css/app.css" />
+		<link rel="stylesheet" href="lib/bootstrap-3.3.5-mod/css/bootstrap.min.css" />
+		<!-- <link rel="stylesheet" href="lib/tablesorter/css/theme.bootstrap.css" />  -->
+		<!-- <link rel="stylesheet" href="lib/tablesorter/css/theme.default.css" /> -->
 
 		<!-- jQuery -->
 		<script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
-		<script type="text/javascript" src="lib/jquery.tablesorter.combined.js"></script>
+		<script type="text/javascript" src="lib/tablesorter/js/jquery.tablesorter.combined.js"></script>
+		<!--<script type="text/javascript" src="lib/jquery.fixedheadertable.min.js"></script> -->
 		
 		<!-- Bootstrap library -->
-		<link rel="stylesheet" href="lib/bootstrap-3.3.5-mod/css/bootstrap.min.css" />
 		<!-- <link rel="stylesheet" href="lib/bootstrap-3.3.5-mod/css/bootstrap.css" /> -->
 		<script type="text/javascript" src="lib/bootstrap-3.3.5-mod/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="lib/bootstrap-waitingfor.js"></script>
@@ -21,51 +28,7 @@
 		<!-- Application code -->
 		<script type="text/javascript" src="js/app.js"></script>
 		<script type="text/javascript" src="js/controls.js"></script>
-		<style>
-		body {padding: 0; margin:0}
 
-		#ui-container {
-			/*padding: 0 10px 10px;*/
-			float: right;
-			width: 290px;
-			border: 1px;
-			z:10;
-		}
-		
-		#canvas-container {
-			width:700px; height:500px;
-		}
-		#app-container {
-			width: 1000px;
-			margin: 0 auto;
-		}
-
-		#app-container {position: relative}
-		#display #inset {
-			position: absolute;
-			bottom: 10px;
-			left: 10px;
-			border: 1px solid red;
-		}
-
-		#candidates-table {
-			margin: 0 2px 0 0;
-			padding: 0 5px;
-		}
-
-		#candidates-table tbody td, #candidates-table thead th {
-			text-align: right;
-		}
-
-		#cand-table-container {
-			max-height: 300px;
-			overflow: auto;
-		}
-		
-		.clear {clear:both;}
-		.btn-group {margin: 5px auto;}
-		
-		</style>
 	</head>
 	<body>
 		<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
@@ -79,124 +42,145 @@
 			</div>
 		</div>
 		<div id="app-container">
-			<h1>CMS Track Visualiser v0.3</h1>
+			<!-- <h4>CMS Track Visualiser v0.4</h4> -->
 			<div id="ui-container" id="control-tabs">
-				<ul class="nav nav-tabs nav-justified">
+				<ul class="nav nav-pills">
 					<li role="presentation" class="active">
-						<a href="#event-controls"role="tab" data-toggle="tab">Event</a>
+						<a href="#event-controls" role="tab" data-toggle="tab">Event</a>
 					</li>
 					<li role="presentation">
 						<a href="#geometry-controls" role="tab" data-toggle="tab">Geometry</a>
 					</li>
 				</ul>
-
+				<hr/>
 				<div class="tab-content">
 					<div role="tabpanel" class="tab-pane active" id="event-controls">
-						<h4>Event Summary:</h4>
-						<p>
-							<span>No Reconstructions: </span><span id="recons_no"> - </span>
-						</p>
-						<div>
-							<input type="button" class="btn btn-default btn-sm" value="Load Data" onclick="loadData();"/>
-						</div>
-
-						<hr />
-
 						<div id="cand-panel" class="panel panel-default">
-							<div class="panel-heading">Candidates List</div>
-							<!-- <div class="panel-body">
-								The following is a list of all the loaded candidate tracks from event.
-							</div> -->
+							<div class="panel-heading">Candidates List<span id="cands-no"></span> <input type="button" class="btn btn-default btn-xs pull-right" value="Load Data" onclick="loadData();"/></div>
+							<div class="panel-body">
+								<button type="button" class="btn btn-smn" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
+
+								<div class="modal bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+												<h4 class="modal-title" id="gridSystemModalLabel">Data Cuts</h4>
+											</div>
+											<div class="modal-body">
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+												<button type="button" class="btn btn-primary">Apply cuts</button>
+											</div>
+										</div><!-- /.modal-content -->
+									</div><!-- /.modal-dialog -->
+								</div>
+							</div>
 
 							<div id="cand-table-container">
-							<table id="candidates-table" class="table table-condensed table-hover tablesorter">
-								<thead>
-									<th>#</th>
-									<th>Pt</th>
-									<th>q</th>
-									<th>eta</th>
-									<th>phi0</th>
-									<th>tp?</th>
-									<th>stubs</th>
-								</thead>
-								<tbody></tbody>
-							</table>
+								<table id="candidates-table" class="table table-condensed table-hover tablesorter">
+									<thead>
+										<tr>
+											<th></th>
+											<th title="Particle ID (in list)">#</th>
+											<th title="Transverse momentum, GeV">p<sub>T</sub></th>
+											<th title="Charge in units of e">q</th>
+											<th title="Pseudo-rapidity">&eta;</th>
+											<th>&phi;<sub>0</sub></th>
+											<th title="&Phi; sector">d&phi;</th>
+											<th title="&eta; region">d&eta;</th>
+										</tr>
+									</thead>
+									<tfoot>
+										<tr>
+											<th></th>
+											<th title="Particle ID (in list)">#</th>
+											<th title="Transverse momentum, GeV">p<sub>T</sub></th>
+											<th title="Charge in units of e">q</th>
+											<th title="Pseudo-rapidity">&eta;</th>
+											<th>&phi;<sub>0</sub></th>
+											<th title="&Phi; sector">d&phi;</th>
+											<th title="&eta; region">d&eta;</th>
+										</tr>
+									</tfoot>
+									<tbody></tbody>
+								</table>
 							</div>
 						</div>
 					</div>
 					<div role="tabpanel" class="tab-pane" id="geometry-controls">
-					
-					
-					<h4>View Controls:</h4>
-					<div class="btn-group btn-group-sm">
-						<input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
-						<input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
-						<input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
-					</div>
-					<div>
-						Zoom:
+						
+						<h4>View Controls:</h4>
 						<div class="btn-group btn-group-sm">
-  							<button type="button" class="btn btn-default" onclick="zoomIn()"s>
-								<span class="glyphicon glyphicon-plus"></span>
-							</button>
-							<button type="button" class="btn btn-default" onclick="zoomOut()">
-								<span class="glyphicon glyphicon-minus"></span>
-							</button>
+							<input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
+							<input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
+							<input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
 						</div>
-					</div>
-					<div>
 						<div>
-							Pan:
+							Zoom:
 							<div class="btn-group btn-group-sm">
-  								<button type="button" class="btn btn-default">
-									<span class="glyphicon glyphicon-arrow-left"></span>
+  								<button type="button" class="btn btn-default" onclick="zoomIn()"s>
+									<span class="glyphicon glyphicon-plus"></span>
 								</button>
-								<button type="button" class="btn btn-default">
-									<span class="glyphicon glyphicon-arrow-right"></span>
-								</button>
-  								<button type="button" class="btn btn-default">
-									<span class="glyphicon glyphicon-arrow-up" onclick="moveUp()""></span>
-								</button>
-								<button type="button" class="btn btn-default" onclick="moveDown()">
-									<span class="glyphicon glyphicon-arrow-down" ></span>
-								</button>
-								<button type="button" class="btn btn-default">
-									<span class="glyphicon glyphicon-home"></span>
+								<button type="button" class="btn btn-default" onclick="zoomOut()">
+									<span class="glyphicon glyphicon-minus"></span>
 								</button>
 							</div>
 						</div>
-					</div>
-
-					<hr />
-
-					<div class="geom-controls">
-						<h4>Geometry Controls:</h4>
-						<div class="btn-group btn-group-sm">
-							<input class="btn btn-default" type="button" value="B1"/>
-							<input class="btn btn-default" type="button" value="B2" />
-							<input class="btn btn-default" type="button" value="B3" />
-							<input class="btn btn-default" type="button" value="B4" />
-							<input class="btn btn-default" type="button" value="B5" />
-							<input class="btn btn-default" type="button" value="B6" />
+						<div>
+							<div>
+								Pan:
+								<div class="btn-group btn-group-sm">
+  									<button type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-arrow-left"></span>
+									</button>
+									<button type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-arrow-right"></span>
+									</button>
+  									<button type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-arrow-up" onclick="moveUp()""></span>
+									</button>
+									<button type="button" class="btn btn-default" onclick="moveDown()">
+										<span class="glyphicon glyphicon-arrow-down" ></span>
+									</button>
+									<button type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-home"></span>
+									</button>
+								</div>
+							</div>
 						</div>
-						<div class="btn-group btn-group-sm">
-							<input class="btn btn-default" type="button" value="E1" />
-							<input class="btn btn-default" type="button" value="E2" />
-							<input class="btn btn-default" type="button" value="E3" />
-							<input class="btn btn-default" type="button" value="E4" />
-							<input class="btn btn-default" type="button" value="E5" />
-						</div>				
-						<div class="btn-group btn-group-sm">
-							<input class="btn btn-default" type="button" value="E-1" />
-							<input class="btn btn-default" type="button" value="E-2" />
-							<input class="btn btn-default" type="button" value="E-3" />
-							<input class="btn btn-default" type="button" value="E-4" />
-							<input class="btn btn-default" type="button" value="E-5" />
+
+						<hr />
+
+						<div class="geom-controls">
+							<h4>Geometry Controls:</h4>
+							<div class="btn-group btn-group-sm">
+								<input class="btn btn-default" type="button" value="B1"/>
+								<input class="btn btn-default" type="button" value="B2" />
+								<input class="btn btn-default" type="button" value="B3" />
+								<input class="btn btn-default" type="button" value="B4" />
+								<input class="btn btn-default" type="button" value="B5" />
+								<input class="btn btn-default" type="button" value="B6" />
+							</div>
+							<div class="btn-group btn-group-sm">
+								<input class="btn btn-default" type="button" value="E1" />
+								<input class="btn btn-default" type="button" value="E2" />
+								<input class="btn btn-default" type="button" value="E3" />
+								<input class="btn btn-default" type="button" value="E4" />
+								<input class="btn btn-default" type="button" value="E5" />
+							</div>				
+							<div class="btn-group btn-group-sm">
+								<input class="btn btn-default" type="button" value="E-1" />
+								<input class="btn btn-default" type="button" value="E-2" />
+								<input class="btn btn-default" type="button" value="E-3" />
+								<input class="btn btn-default" type="button" value="E-4" />
+								<input class="btn btn-default" type="button" value="E-5" />
+							</div>
 						</div>
-					</div>
-					<div>
-						<input class="btn btn-default btn-sm" type="button" value="Load Geometry" onclick="loadGeometry();"/>
-					</div>
+						<div>
+							<input class="btn btn-default btn-sm" type="button" value="Load Geometry" onclick="loadGeometry();"/>
+						</div>
 					</div>
 				</div>
 				<!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
@@ -205,6 +189,14 @@
 				<div id="canvas-container"></div>
 				<div id="inset"></div>
 			</div>
+
+			<div id="focus-panel" class="panel panel-default pull-left">
+				<div class="panel-heading">Focus Information</div>
+				<div class="panel-body">
+					Focus: <span id="highlighted-tr">Information about the currently focused element will apper once you hover over it.</span><br/><br/>
+					Selected: <span id="selected-tr"></span>
+				</div>
+			</div>			
 			<div class="clear"></div>
 		</div>
 		

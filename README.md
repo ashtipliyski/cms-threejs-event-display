@@ -17,3 +17,11 @@ The detector geometry was exported from **true** model used in CMSSW based simul
 Similarly to the detector geometry, the event data is stored in plain ASCII files (JSON formatted) and can be loaded on demand. This can be done by clicking on the "Load Data" button in the Event Summary panel. Currently, only a single event file is available the location of which is hardcoded in the application code. This is done for testing purposes and in the final version of the Viewer there will be the ability to load different events.
 
 Once the data file has been loaded and parsed, the event components will be visualised in the 3D scene. The test event file used contains a small number of "tracks" processed from a **full** detector simulation, implemented in CMSSW. The elements of the event shown are fitted candidate tracks, represented by blue lines and stubs used to reconstruct those tracks, as red spheres. The next iteration of the application would allow for the handling of higher number of candidates by offering the ability to select candidates and change the visibility of their associated stubs true tracks and stubs on and off.
+
+
+## Dependencies
+
+- jQuery
+- Bootstrap
+- tablesorter jQuery plugin: https://github.com/Mottie/tablesorter
+- 
