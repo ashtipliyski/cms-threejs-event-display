@@ -880,6 +880,9 @@ $(function() {
 		camera.toPerspective();
 		//camera.setFov(45);
 		render();
+
+		$('#ortho-btn').removeClass('active');
+		$('#persp-btn').addClass('active');
 	};
 
 	document.setOrthographic = function()
@@ -887,5 +890,8 @@ $(function() {
 		camera.toOrthographic();
 		//camera.setFov(10);
 		render();
+		
+		$('#ortho-btn').addClass('active');
+		$('#persp-btn').removeClass('active');
 	};
 });
