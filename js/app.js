@@ -6,8 +6,8 @@ $(function() {
 	var scene_i, camera_i, renderer_i, container_i;
 
 	// inset constants
-	var CANVAS_WIDTH = 50,
-		CANVAS_HEIGHT = 50,
+	var CANVAS_WIDTH = 100,
+		CANVAS_HEIGHT = 100,
 		CAM_DISTANCE = 300;
 	
 	var geometry, material, mesh, plane;
@@ -32,30 +32,18 @@ $(function() {
 		
 		scene = new THREE.Scene();
 
+		/*
 		camera = new THREE.PerspectiveCamera(
 			//camera = new THREE.OrthographicCamera(
 			45, scene_width / scene_height, 0.0001, 10000
 		);
+		 */
+
+		camera = new THREE.CombinedCamera(
+			scene_width/2, scene_height/2, 45, 0.0001, 10000, -500, 1000
+		);
 		// camera.position.set(0, 300 ,500);
 		camera.position.set(0, 0 ,1000);
-
-
-		geometry = new THREE.BoxGeometry(200, 200, 200);
-		material = new THREE.MeshNormalMaterial({
-		});
-
-		mesh = new THREE.Mesh(geometry, material);
-		mesh.position.set(300, 300, 300);
-
-		plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(1000,1000),
-			new THREE.MeshBasicMaterial({
-				color: 0x000,				
-				side: THREE.DoubleSide,
-				transparent: true,
-				opacity: 0.3				
-			})
-		);
 
 		var line_geometry = new THREE.Geometry();
 		
@@ -65,34 +53,11 @@ $(function() {
 		var line_material = new THREE.LineBasicMaterial({
 			color:0x888888, linewidth: 5
 		});
-		var line = new THREE.Line(line_geometry, line_material);
+		var beam_line = new THREE.Line(line_geometry, line_material);
 
-
-		// sample track
-		//Create a closed bent a sine-like wave
-		var curve = new THREE.SplineCurve3( [
-			new THREE.Vector3( 0, 0, 0 ),
-			new THREE.Vector3( 10, 40, 10 ),
-			new THREE.Vector3( 25, 350, 25 ),
-			new THREE.Vector3( 400, 0, 400 )
-		] );
-
-		var geometry_c = new THREE.Geometry();
-		geometry_c.vertices = curve.getPoints( 50 );
-
-		//Create the final Object3d to add to the scene
-		var splineObject = new THREE.Line(
-			geometry_c, new THREE.LineBasicMaterial({
-				color : 0x0011dd,
-				linewidth: 5
-			})
-		);
 		
 		// add assets to scene
-		// scene.add(splineObject);
-		scene.add(line);
-		// scene.add(plane);
-		// scene.add(mesh);
+		scene.add(beam_line);
 
 		renderer = new THREE.WebGLRenderer();
 		renderer.setClearColor(0xffffff);
@@ -140,14 +105,63 @@ $(function() {
 		);
 		camera_i.up = camera.up; // important!
 
-		// axes
-		axes = new THREE.AxisHelper( 100 );
-		scene_i.add( axes );
+		// define axes using Arrow Helpers for each direction
+		var i_origin = new THREE.Vector3(0,0,0);
+		
+		var rx = new THREE.ArrowHelper(
+			new THREE.Vector3(4,0,0), i_origin, 120, 0xff0000, 40, 25
+		);
+		var gy = new THREE.ArrowHelper(
+			new THREE.Vector3(0,4,0), i_origin, 120, 0x00ff00, 40, 25
+		);
+		var bz = new THREE.ArrowHelper(
+			new THREE.Vector3(0,0,4), i_origin, 120, 0x0000ff, 40, 25
+		);
+
+		rx.line.material.linewidth = 5;
+		gy.line.material.linewidth = 5;
+		bz.line.material.linewidth = 5;
+
+		scene_i.add(rx);
+		scene_i.add(gy);
+		scene_i.add(bz);
+
+		var label_x_geom = new THREE.TextGeometry(
+			'x', {size: 50, height: 0.1}
+		);
+		var label_x_mat = new THREE.MeshBasicMaterial({
+			color: 0xff0000
+		});		
+		var label_x = new THREE.Mesh(label_x_geom, label_x_mat);
+
+		label_x.position.x = 80;
+		label_x.position.y = 20;
+
+		var label_y = new THREE.Mesh(
+			new THREE.TextGeometry('y', {size: 50, height:0.1}),
+			new THREE.MeshBasicMaterial({color: 0x00ff00})
+		);
+
+		label_y.position.x = 20;
+		label_y.position.y = 80;
+		
+		var label_z = new THREE.Mesh(
+			new THREE.TextGeometry('z', {size: 50, height: 0.1}),
+			new THREE.MeshBasicMaterial({color: 0x00000ff})
+		);
+
+		label_z.position.x = -50;
+		label_z.position.z = 80;
+
+		scene_i.add(label_x);
+		scene_i.add(label_y);
+		scene_i.add(label_z);
 
 		var projector = new THREE.Projector();
 		mouse = new THREE.Vector2();
 
 		render();
+		animate();
 	}
 
 	function load_geometry(filename)
@@ -264,8 +278,9 @@ $(function() {
 
 	function animate()
 	{
+		// console.log(camera.position);
+		
 		requestAnimationFrame(animate);
-
 		
 		camera_i.position.copy( camera.position );
 		camera_i.position.sub( controls.target ); // added by @libe
@@ -327,7 +342,6 @@ $(function() {
 			$(element.currentTarget).addClass("active");
 			document.showGeomElement(target.attr("value"));
 		}
-		// alert("clicked");
 	});
 
 	document.showGeomElement = function (identifier)
@@ -408,20 +422,33 @@ $(function() {
 
 	document.zoomIn = function ()
 	{
+		/*
 		console.log("zooming in");
 		camera.position.x -= 0.1 * camera.position.x;
 		camera.position.y -= 0.1 * camera.position.y;
 		camera.position.z -= 0.1 * camera.position.z;
 		camera.updateProjectionMatrix();
+		 */
+
+		console.log(camera.zoom);
+		camera.setZoom(camera.zoom + camera.zoom*0.1);
+
+		render();
 	};
 
 	document.zoomOut = function ()
 	{
+		/*
 		console.log("zooming out");
 		camera.position.x += 0.1 * camera.position.x;
 		camera.position.y += 0.1 * camera.position.y;
 		camera.position.z += 0.1 * camera.position.z;
 		camera.updateProjectionMatrix();
+		*/
+
+		
+		camera.setZoom(camera.zoom - camera.zoom*0.1);
+		render();
 	};
 
 	document.moveUp = function ()
@@ -449,6 +476,7 @@ $(function() {
 		document.event = {};
 
 		document.event.candidates = [];
+		document.visible_tracks = [];
 		
 		console.log(candidates_list.length + " candidates found.");
 
@@ -578,6 +606,7 @@ $(function() {
 					scene.add(stub);
 
 					this.data.stubs_obj_list.push(stub);
+					document.event.stubs.push(stub);
 				}
 
 				var tracks_list = this.data.tp_obj_coords;
@@ -613,6 +642,8 @@ $(function() {
 					
 					this.data.tp_obj = track;
 
+					document.event.tp = track;
+
 				} else {
 					//console.log("no tp for particle");
 				}
@@ -637,9 +668,13 @@ $(function() {
 
 				scene.remove(this.data.tp_obj);
 				// console.log("hiding info");
+
+				document.event.tp = null;
+				document.event.stubs = [];
 			};
 			
 			document.event.candidates.push(cand);
+			document.visible_tracks.push(cand);
 			
 			scene.add(cand);
 			
@@ -653,8 +688,6 @@ $(function() {
 	
 	document.loadData = function ()
 	{
-		//var filename = "test4.js";
-		//var filename = "test50.js";
 		var filename = "test_full.js";
 
 		document.loadEvent(filename);
@@ -700,9 +733,13 @@ $(function() {
 	};
 
 
+
+	document.mouseDown = 0;
+
+
 	function onSceneMouseMove (event)
 	{		
-		if (!document.external_data || mouseDown)
+		if (!document.external_data || document.mouseDown)
 			return;
 		
 		var rect = container.getBoundingClientRect();
@@ -715,8 +752,8 @@ $(function() {
 		
 		var raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mouse, camera);
-        var intersects = raycaster.intersectObjects(
-			document.event.candidates, true
+		var intersects = raycaster.intersectObjects(
+			document.visible_tracks, true
 		);
 
 
@@ -730,22 +767,22 @@ $(function() {
 			//document.prev_hover_target.material.linewidth = document.prev_hover_material.linewidth;
 
 			/*
-			document.prev_hover_target.material.color.setHex(0x0000ff);
+			 document.prev_hover_target.material.color.setHex(0x0000ff);
 
-			// document.prev_hover_target.object.material = document.prev_material;
+			 // document.prev_hover_target.object.material = document.prev_material;
 
-			// document.prev_hover_target.object.color = {'r': 0, 'g': 0, 'b':1};
-			scene.remove(document.prev_hover_target);
-			scene.add(document.prev_hover_target);
+			 // document.prev_hover_target.object.color = {'r': 0, 'g': 0, 'b':1};
+			 scene.remove(document.prev_hover_target);
+			 scene.add(document.prev_hover_target);
 
-			// console.log("resetting");
+			 // console.log("resetting");
 
-			render();
+			 render();
 			 */
 		}
 
 		
-        if (intersects.length > 0) {
+		if (intersects.length > 0) {
 
 			var obj = intersects[0].object;
 			
@@ -756,25 +793,25 @@ $(function() {
 			document.highlight_candidate(obj, scene, render);
 
 			/*
-			//var index = obj.id;
-			//document.prev_hover_target = document.event.candidates[index];
-			document.prev_hover_target = obj;
-			document.prev_hover_material = obj.material;
+			 //var index = obj.id;
+			 //document.prev_hover_target = document.event.candidates[index];
+			 document.prev_hover_target = obj;
+			 document.prev_hover_material = obj.material;
 
-            obj.material.transparent = true;
-			//obj.material.linewidth = 4;
-			//obj.material.opacity = 1;
+			 obj.material.transparent = true;
+			 //obj.material.linewidth = 4;
+			 //obj.material.opacity = 1;
 
-			obj.material.color.setHex(0xb85423);
+			 obj.material.color.setHex(0xb85423);
 
-			render();
-			*/
-        }
-	}
-	
+			 render();
+			 */
+		}
+	};
+
 	function onSceneMouseDown (event)
 	{
-		++mouseDown;
+		++document.mouseDown;
 		
 		if (!document.external_data)
 			return;
@@ -789,59 +826,66 @@ $(function() {
 		
 		var raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mouse, camera);
-        var intersects = raycaster.intersectObjects(document.event.candidates, true);
+		var intersects = raycaster.intersectObjects(document.visible_tracks, true);
 
-        if (intersects.length > 0) {
+		if (intersects.length > 0) {
 
 			if (document.prev_target) {
 
 				document.reset_click_candidate(document.prev_target, scene, render);
 				/*
-				// document.prev_target.material = document.prev_material;
-				document.prev_target.material.opacity = document.prev_material.opacity;
-				document.prev_target.material.linewidth = document.prev_material.linewidth;
-				document.prev_target.material.color.setHex(0x0000ff);
+				 // document.prev_target.material = document.prev_material;
+				 document.prev_target.material.opacity = document.prev_material.opacity;
+				 document.prev_target.material.linewidth = document.prev_material.linewidth;
+				 document.prev_target.material.color.setHex(0x0000ff);
 
-				scene.remove(document.prev_target);
-				scene.add(document.prev_target);
+				 scene.remove(document.prev_target);
+				 scene.add(document.prev_target);
 
-				document.prev_target.hide_info();
+				 document.prev_target.hide_info();
 
-				render();
+				 render();
 				 */
 			}
 
 			var obj = intersects[0].object;
 
 			document.select_candidate(obj, scene, render);
-				/*
+			/*
 
-			//var index = intersects[0].object.id;
-			//document.prev_target = document.event.candidates[index];
-			document.prev_target = obj;
-			document.prev_material = obj.material;
+			 //var index = intersects[0].object.id;
+			 //document.prev_target = document.event.candidates[index];
+			 document.prev_target = obj;
+			 document.prev_material = obj.material;
 
-			obj.show_info();
+			 obj.show_info();
 
-            obj.material.transparent = true;
-            obj.material.opacity = 0.9;
-			obj.material.linewidth = 3;
-			obj.material.color.setHex(0xaa00dd);
+			 obj.material.transparent = true;
+			 obj.material.opacity = 0.9;
+			 obj.material.linewidth = 3;
+			 obj.material.color.setHex(0xaa00dd);
 
-			document.prev_hover_target = null;
+			 document.prev_hover_target = null;
 
-			render();
-			console.log("clicked");*/
-        } else {
+			 render();
+			 console.log("clicked");*/
+		} else {
 			// console.log("no intersects");
-		}
-	}
 
-	var mouseDown = 0;
-	
-	document.onmouseup = function() {
-		if (mouseDown > 0) {
-			--mouseDown;
 		}
+	};	
+
+	document.setPerspective = function()
+	{
+		camera.toPerspective();
+		//camera.setFov(45);
+		render();
+	};
+
+	document.setOrthographic = function()
+	{
+		camera.toOrthographic();
+		//camera.setFov(10);
+		render();
 	};
 });

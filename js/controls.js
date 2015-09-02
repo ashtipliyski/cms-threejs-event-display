@@ -28,11 +28,37 @@ $(function(){
 			document.reset_candidate(cand, scene, render);
 		});
 
-		$("#candidates-table tbody tr").click(function(e){
+		$('#candidates-table tbody input[type="checkbox"]').click(function(e) {
+			return;
+			//return;
+			//e.preventDefault();
 			e.stopPropagation();
-			e.preventDefault();
+			console.log("right in the face");
+
+			if ($(this).prop('checked')) {
+				// show candidate
+
+				var cand_id = parseInt($(this).parent().parent().find("td.id-cell small").html()) - 1;
+				var cand = document.event.candidates[cand_id];
+
+				console.log("cand id: " + $(this).parent().parent().find("td.id-cell small").html() + " " + cand_id);
+				
+				document.select_candidate(cand, scene, render);
+				
+			} else {
+				// hide candidate
+			}
+		});
+
+		$("#candidates-table tbody tr").click(function(e){
 			
-			
+			//e.stopPropagation();
+			//e.preventDefault();
+			console.log("after the face");
+// 			console.log($(this).find("td input[type='checkbox']")[0].checked);
+			var checkbox_obj = $(this).find("td input[type='checkbox']");
+
+			console.log($(this).find("td input[type='checkbox']").is(":checked"));
 			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 
@@ -40,9 +66,11 @@ $(function(){
 				if ($(this).find("td input[type='checkbox']").prop("checked")) {
 					$(this).find("td input[type='checkbox']").prop("checked", false);
 					$(this).find("span.hidden").html("0");
+					console.log("disabling");
 				} else {
 					$(this).find("td input[type='checkbox']").prop("checked", true);
 					$(this).find("span.hidden").html("1");
+					console.log("enabling");
 				}
 			} 
 
@@ -53,9 +81,11 @@ $(function(){
 		});
 
 		// configure tablesorter bootstrap theme
-		
+
+	
 		$("#candidates-table").tablesorter({
-			textExtraction: sorter_function/*,
+			textExtraction: sorter_function
+		/*,
 			theme:'default',
 			widthFixed: false,
 			headerTemplate:'{content}{icon}',
@@ -64,6 +94,9 @@ $(function(){
 				stickyHeaders_attachTo: '#cand-table-container'
 			}*/
 		});
+		
+		// this should be moved to a place where it is called only once after all candidates are loaded not after every single candidate
+		$('[data-toggle="tooltip"]').tooltip();
 	};
 
 	document.add_candidate = function (cand)
@@ -129,7 +162,7 @@ $(function(){
 		//}
 		
 		$('#candidates-table tbody').append(r.join(''));
-		$('[data-toggle="tooltip"]').tooltip();
+
 		
 	};
 	
