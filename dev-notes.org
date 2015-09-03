@@ -1,0 +1,3 @@
+* TODO:
+** TODO move highlight, select and reset as methods on the candidate object, similarly to the show_info() and hide_info() methods. This will allow for uniform performance and appearance
+** TODO 
