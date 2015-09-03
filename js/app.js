@@ -33,10 +33,10 @@ $(function() {
 		scene = new THREE.Scene();
 
 		/*
-		camera = new THREE.PerspectiveCamera(
-			//camera = new THREE.OrthographicCamera(
-			45, scene_width / scene_height, 0.0001, 10000
-		);
+		 camera = new THREE.PerspectiveCamera(
+		 //camera = new THREE.OrthographicCamera(
+		 45, scene_width / scene_height, 0.0001, 10000
+		 );
 		 */
 
 		camera = new THREE.CombinedCamera(
@@ -266,7 +266,7 @@ $(function() {
 					document.geometry_loaded = true;
 					waitingDialog.hide();
 
-					render();
+				render();
 				},
 				fail: function(data) {
 					alert("Error loading geometry.");
@@ -423,11 +423,11 @@ $(function() {
 	document.zoomIn = function ()
 	{
 		/*
-		console.log("zooming in");
-		camera.position.x -= 0.1 * camera.position.x;
-		camera.position.y -= 0.1 * camera.position.y;
-		camera.position.z -= 0.1 * camera.position.z;
-		camera.updateProjectionMatrix();
+		 console.log("zooming in");
+		 camera.position.x -= 0.1 * camera.position.x;
+		 camera.position.y -= 0.1 * camera.position.y;
+		 camera.position.z -= 0.1 * camera.position.z;
+		 camera.updateProjectionMatrix();
 		 */
 
 		console.log(camera.zoom);
@@ -439,12 +439,12 @@ $(function() {
 	document.zoomOut = function ()
 	{
 		/*
-		console.log("zooming out");
-		camera.position.x += 0.1 * camera.position.x;
-		camera.position.y += 0.1 * camera.position.y;
-		camera.position.z += 0.1 * camera.position.z;
-		camera.updateProjectionMatrix();
-		*/
+		 console.log("zooming out");
+		 camera.position.x += 0.1 * camera.position.x;
+		 camera.position.y += 0.1 * camera.position.y;
+		 camera.position.z += 0.1 * camera.position.z;
+		 camera.updateProjectionMatrix();
+		 */
 
 		
 		camera.setZoom(camera.zoom - camera.zoom*0.1);
@@ -477,6 +477,7 @@ $(function() {
 
 		document.event.candidates = [];
 		document.visible_tracks = [];
+		document.event.stubs = [];
 		
 		console.log(candidates_list.length + " candidates found.");
 
@@ -540,7 +541,7 @@ $(function() {
 			cand.data.id = cand_i;
 
 			cand.data.stubs_obj_list = [];
-			cand.data.stubs_coord = obj.stubs;
+			cand.data.stubs = obj.stubs;
 			cand.data.tp_obj_coords = obj.track.coords;
 			if (obj.track.coords) {
 				cand.data.tp_data = {};
@@ -586,20 +587,25 @@ $(function() {
 
 			cand.show_info = function ()
 			{
-				var stubs_list = this.data.stubs_coord;
+				var stubs_list = this.data.stubs;
 
 				for( var key in stubs_list)
 				{
 					
-					var x = stubs_list[key][0];
-					var y = stubs_list[key][1];
-					var z = stubs_list[key][2];
+					var x = stubs_list[key].coords[0];
+					var y = stubs_list[key].coords[1];
+					var z = stubs_list[key].coords[2];
 					
 					var s_geometry = new THREE.SphereGeometry(3, 20, 20);
+
+					var s_color = 0x000000;
+					if (!stubs_list[key].genuine) {
+						s_color = 0xff0000;
+					}
 					
 					var stub = new THREE.Mesh(
 						s_geometry,
-						new THREE.MeshBasicMaterial({color: 0x000000})
+						new THREE.MeshBasicMaterial({color: s_color})
 					);
 					stub.position.set(x, y, z);
 
@@ -737,8 +743,12 @@ $(function() {
 	document.mouseDown = 0;
 
 
+	
 	function onSceneMouseMove (event)
-	{		
+	{
+		// disabled due to camera issues
+		return;
+		
 		if (!document.external_data || document.mouseDown)
 			return;
 		
@@ -812,6 +822,9 @@ $(function() {
 	function onSceneMouseDown (event)
 	{
 		++document.mouseDown;
+
+		// disabled due to camera issue
+		return;
 		
 		if (!document.external_data)
 			return;
@@ -893,5 +906,62 @@ $(function() {
 		
 		$('#ortho-btn').addClass('active');
 		$('#persp-btn').removeClass('active');
+	};
+
+	document.showAll = function ()
+	{
+		for (var j in document.event.candidates)
+		{
+			document.showTrack(j);
+		}
+
+		render();
+	};
+
+	document.hideAll = function()
+	{
+		document.visible_tracks = [];
+		
+		for (var i in document.event.candidates)
+		{
+			document.hideTrack(i);
+		}
+
+		render();
+	};
+
+
+	document.showHighlighted = function()
+	{
+		document.hideAll();
+
+		var id = parseInt($('#candidates-table tr.info .id-cell small').html()) - 1;
+		var cand = document.event.candidates[id];
+		cand.show_info();
+
+		console.log(id);
+		document.showTrack(id);
+
+		render();
+	};
+
+	document.showTrack = function(id)
+	{
+		scene.add(document.event.candidates[id]);
+		document.visible_tracks.push(document.event.candidates[id]);
+
+		$('#candidates-table tr#id-' + id + ' input[type="checkbox"]').prop('checked', true);
+		
+	};
+
+	document.hideTrack = function(id)
+	{
+		document.event.candidates[id].hide_info();
+		scene.remove(document.event.candidates[id]);
+		
+		$('#candidates-table tr#id-' + id + ' input[type="checkbox"]').prop('checked', false);
+
+		console.log('#candidates-table tr#id-' + id + ' input[type="checkbox"]');
+		console.log($('#candidates-table tr#id-' + id + ' input[type="checkbox"]'));
 	};
 });

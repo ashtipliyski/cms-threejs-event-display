@@ -16,7 +16,6 @@ $(function(){
 
 			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
-			console.log(cand_id);
 
 			document.highlight_candidate(cand, scene, render);
 		}, function (e) {
@@ -54,25 +53,25 @@ $(function(){
 			
 			//e.stopPropagation();
 			//e.preventDefault();
-			console.log("after the face");
 // 			console.log($(this).find("td input[type='checkbox']")[0].checked);
-			var checkbox_obj = $(this).find("td input[type='checkbox']");
-
-			console.log($(this).find("td input[type='checkbox']").is(":checked"));
+			// var checkbox_obj = $(this).find("td input[type='checkbox']");
+			
+			
 			var cand_id = parseInt($(this).find("td.id-cell small").html()) - 1;
 			var cand = document.event.candidates[cand_id];
 
+			/*
 			if ($(this) != $(this).find("td input[type='checkbox']")) {
 				if ($(this).find("td input[type='checkbox']").prop("checked")) {
 					$(this).find("td input[type='checkbox']").prop("checked", false);
 					$(this).find("span.hidden").html("0");
-					console.log("disabling");
+					// console.log("disabling");
 				} else {
 					$(this).find("td input[type='checkbox']").prop("checked", true);
 					$(this).find("span.hidden").html("1");
-					console.log("enabling");
+					// console.log("enabling");
 				}
-			} 
+			} */
 
 			
 			// console.log($(this).find("td input")[0]);
@@ -84,19 +83,23 @@ $(function(){
 
 	
 		$("#candidates-table").tablesorter({
-			textExtraction: sorter_function
-		/*,
+			textExtraction: sorter_function,
 			theme:'default',
 			widthFixed: false,
 			headerTemplate:'{content}{icon}',
 			widgets: ['stickyHeaders'],
 			widgetOptions: {
 				stickyHeaders_attachTo: '#cand-table-container'
-			}*/
+			}
 		});
+
+		/*
+		// add a single row to the data 
+		$('#candidates-table-sticky')
+		 */
 		
 		// this should be moved to a place where it is called only once after all candidates are loaded not after every single candidate
-		$('[data-toggle="tooltip"]').tooltip();
+		$('[data-toggle="tooltip"]').tooltip({container:'body'});
 	};
 
 	document.add_candidate = function (cand)
@@ -130,7 +133,7 @@ $(function(){
 		}
 		
 		r[++j] = '<tr id="el-' + cand.data.id + '" class="'+class_name+'" data-toggle="tooltip" data-placement="left" title="' + tooltip_str + '">';
-		r[++j] = '<td scope="row"><small class="hidden">0</small><input id="box-' + cand.data.id + '" type="checkbox"></td>';
+		r[++j] = '<td scope="row"><small class="hidden">1</small><input id="box-' + cand.data.id + '" type="checkbox" checked="checked"></td>';
 		r[++j] = '<td class="int id-cell"><small>';
 		r[++j] = parseInt(cand.data.id) + 1;
 		r[++j] = '</small></td><td class="fl" title="'+cand.data.pt.toFixed(5)+'"><small>';
