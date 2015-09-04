@@ -64,9 +64,9 @@
 						<div id="cand-panel" class="panel panel-default">
 							<div class="panel-heading">Candidates List<span id="cands-no"></span> <input type="button" class="btn btn-default btn-xs pull-right" value="Load Data" onclick="loadData();"/></div>
 							<div class="panel-body">
-								<button type="button" class="btn btn-smn" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
+								<button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
 
-								<div class="modal bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+								<div class="modal bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="cuts-modal">
 									<div class="modal-dialog" role="document">
 										<div class="modal-content">
 											<div class="modal-header">
@@ -74,10 +74,133 @@
 												<h4 class="modal-title" id="gridSystemModalLabel">Data Cuts</h4>
 											</div>
 											<div class="modal-body">
+												<form id="cuts-form" class="form-horizontal">
+													<div class="col-sm-6">
+														<h3>Candidate Requirements</h3>
+														<div class="form-group">
+															<label for="track-pt-min" class="control-label col-sm-2">
+																p<sub>T</sub>
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-pt-min"
+																	name="track-pt-min" placeholder="min pt"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-pt-max"
+																	name="track-pt-max" placeholder="max pt"/>
+															</div>
+															<div class="col-sm-2">
+																<p class="form-control-static">GeV</p>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="track-eta-min" class="control-label col-sm-2">
+																&eta;
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-eta-min"
+																	name="track-eta-min" placeholder="min &eta;"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-eta-max"
+																	name="track-eta-max" placeholder="max &eta;"/>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="track-stubs-min" class="control-label col-sm-2">
+																N<sub>stubs</sub>
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-stubs-min"
+																	name="track-stubs-min" placeholder="min stubs"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-stubs-max"
+																	name="track-stubs-max" placeholder="max stubs"/>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="track-tp" class="control-label col-sm-2"
+																title="Do you require the fitted candidate to have a corresponding true particle?">
+																TP?
+															</label>
+															<div class="col-sm-4">
+																<select class="form-control" name="track-tp" id="track-tp">
+																	<option selected="selected">-</option>
+																	<option>Yes</option>
+																	<option>No</option>
+																</select>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="track-sphi-min" class="control-label col-sm-2"
+																title="Detector region in &phi;">
+																R<sub>&phi;</sub>
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-sphi-min"
+																	name="track-sphi-min" placeholder="min S_phi"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-sphi-max"
+																	name="track-sphi-max" placeholder="max S_phi"/>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="track-reta-min" class="control-label col-sm-2"
+																title="Detector segment in &eta;">
+																S<sub>&eta;</sub>
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-reta-min"
+																	name="track-reta-min" placeholder="min R_eta"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="track-reta-max"
+																	name="track-reta-max" placeholder="max R_eta"/>
+															</div>
+														</div>
+													</div>
+													<div class="col-sm-6">
+														<h3>True particle Requirements</h3>
+														<div class="form-group">
+															<label for="tp-pt-min" class="control-label col-sm-2">
+																p<sub>T</sub>
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="tp-pt-min"
+																	name="tp-pt-min" placeholder="min pt"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="tp-pt-max"
+																	name="tp-pt-max" placeholder="max pt"/>
+															</div>
+															<div class="col-sm-2">
+																<p class="form-control-static">GeV</p>
+															</div>
+														</div>
+														<div class="form-group">
+															<label for="tp-eta-min" class="control-label col-sm-2">
+																&eta;
+															</label>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="tp-eta-min"
+																	name="tp-eta-min" placeholder="min &eta;"/>
+															</div>
+															<div class="col-sm-4">
+																<input type="text" class="form-control" id="tp-eta-max"
+																	name="tp-eta-max" placeholder="max &eta;"/>
+															</div>
+														</div>
+													</div>
+													<div class="clear"></div>
+												</form>
 											</div>
 											<div class="modal-footer">
 												<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-												<button type="button" class="btn btn-primary">Apply cuts</button>
+												<button type="button" class="btn btn-primary" onclick="applyCuts()">
+													Apply cuts
+												</button>
 											</div>
 										</div><!-- /.modal-content -->
 									</div><!-- /.modal-dialog -->

@@ -160,6 +160,14 @@ $(function() {
 		var projector = new THREE.Projector();
 		mouse = new THREE.Vector2();
 
+		/*
+		 var light = new THREE.AmbientLight( 0x333333 ); // soft white light
+		 scene.add( light );
+		 var light = new THREE.PointLight(0xffffff,1,4500);
+		 light.position.set(-300,1000,-300);
+		 scene.add(light);
+		 */
+
 		render();
 		animate();
 	}
@@ -233,8 +241,8 @@ $(function() {
 							shape_mesh = new THREE.MeshNormalMaterial({
 								color:0x0000ff,
 								transparent: true,
-								opacity: 0.2,
-								side: THREE.DoubleSide
+								opacity: 0.2/*,
+											 side: THREE.DoubleSide*/
 							});
 						}
 						
@@ -266,7 +274,7 @@ $(function() {
 					document.geometry_loaded = true;
 					waitingDialog.hide();
 
-				render();
+					render();
 				},
 				fail: function(data) {
 					alert("Error loading geometry.");
@@ -561,8 +569,8 @@ $(function() {
 			cand.data.m = obj.m;			
 			cand.data.theta = obj.theta;
 			cand.data.chi2dof = obj.chi2dof;
-			cand.data.dphi = obj.phi_sec;
-			cand.data.deta = obj.eta_reg;
+			cand.data.sphi = obj.phi_sec;
+			cand.data.reta = obj.eta_reg;
 
 			document.add_candidate(cand);
 
@@ -950,7 +958,8 @@ $(function() {
 		scene.add(document.event.candidates[id]);
 		document.visible_tracks.push(document.event.candidates[id]);
 
-		$('#candidates-table tr#id-' + id + ' input[type="checkbox"]').prop('checked', true);
+		$('#box-' + id).prop('checked', true);
+		
 		
 	};
 
@@ -959,9 +968,148 @@ $(function() {
 		document.event.candidates[id].hide_info();
 		scene.remove(document.event.candidates[id]);
 		
-		$('#candidates-table tr#id-' + id + ' input[type="checkbox"]').prop('checked', false);
+		$('#box-' + id).prop('checked', false);
+		
+	};
 
-		console.log('#candidates-table tr#id-' + id + ' input[type="checkbox"]');
-		console.log($('#candidates-table tr#id-' + id + ' input[type="checkbox"]'));
+	document.applyCuts = function ()
+	{
+		$('#cuts-modal').modal('hide');
+		
+		if (!document.event) {
+			alert("No data loaded.");
+			return;
+		}
+		
+		// check candidate constraints
+		var min_pt = $('#track-pt-min').val();
+		var max_pt = $('#track-pt-max').val();
+		
+		var min_eta = $('#track-eta-min').val();
+		var max_eta = $('#track-eta-max').val();
+		
+		var min_stubs = $('#track-stubs-min').val();
+		var max_stubs = $('#track-stubs-max').val();
+		
+		var min_sphi = $('#track-sphi-min').val();
+		var max_sphi = $('#track-sphi-max').val();
+		
+		var min_reta = $('#track-reta-min').val();
+		var max_reta = $('#track-reta-max').val();
+
+		var track_tp = $('#track-tp').val();
+
+		var min_pt_tp = $('#tp-pt-min').val();
+		var max_pt_tp = $('#tp-pt-max').val();
+		
+		var min_eta_tp = $('#tp-eta-min').val();
+		var max_eta_tp = $('#tp-eta-max').val();
+		
+						
+		for (var i in document.event.candidates)
+		{
+			var cand = document.event.candidates[i];
+			var is_valid = true;
+
+			// check tp requirements
+			if (is_valid && (min_pt || max_pt)) {
+				if (min_pt && cand.data.pt < min_pt) {
+					is_valid = false;
+				}
+
+				if (max_pt && cand.data.pt > max_pt) {
+					is_valid = false;
+				}
+			}
+			
+			if (is_valid && (min_eta || max_eta)) {
+				if (max_eta && cand.data.eta > max_eta) {
+					is_valid = false;
+				}
+
+				if (min_eta && cand.data.eta < min_eta) {
+					is_valid = false;
+				}
+			}
+			
+			if (is_valid && (min_stubs || max_stubs)) {
+				if (min_stubs && cand.data.stubs.length < min_stubs)
+				{
+					is_valid = false;
+				}
+
+				if (max_stubs && cand.data.stubs.length > max_stubs)
+				{
+					is_valid = false;
+				}
+			}
+
+			if (is_valid && track_tp) {
+				if (track_tp === 'Yes' && !cand.data.tp_obj_coords) {
+					is_valid = false;
+				}
+
+				if (track_tp === 'No' && cand.data.tp_obj_coords) {
+					is_valid = false;
+				}
+			}
+
+			
+			if (is_valid && (min_sphi || max_sphi)) {
+				if (min_sphi && cand.data.sphi < min_sphi)
+				{
+					is_valid = false;
+				}
+				
+				if(max_sphi && cand.data.sphi > max_sphi)
+				{
+					is_valid = false;
+				}
+			}
+
+			
+			if (is_valid && (min_reta || max_reta)) {
+				if (min_reta && cand.data.eta < min_reta){
+					is_valid = false;
+				}
+				
+				if(max_reta && cand.data.reta > max_reta) {
+					is_valid = false;
+				}
+			}
+
+			
+			if (is_valid && track_tp && (min_pt_tp || max_pt_tp)) {
+
+				if (min_pt_tp && min_pt_tp > cand.data.tp_data.pt) {
+					is_valid = false;
+				}
+				
+				if (max_pt_tp && max_pt_tp < cand.data.tp_data.pt) {
+					is_valid = false;
+				}
+				
+			}
+			
+			if (is_valid && track_tp && (min_eta_tp || max_eta_tp)) {
+
+				if (min_eta_tp && min_eta_tp > cand.data.tp_data.eta) {
+					is_valid = false;
+				}
+				
+				if (max_eta_tp && max_eta_tp < cand.data.tp_data.eta) {
+					is_valid = false;
+				}
+				
+			}
+			
+
+			if (is_valid) {
+				document.showTrack(i);
+			} else {
+				document.hideTrack(i);
+			}
+		}
+
 	};
 });

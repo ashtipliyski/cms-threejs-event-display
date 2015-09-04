@@ -28,25 +28,22 @@ $(function(){
 		});
 
 		$('#candidates-table tbody input[type="checkbox"]').click(function(e) {
-			return;
 			//return;
 			//e.preventDefault();
 			e.stopPropagation();
-			console.log("right in the face");
+			
+			var cand_id = parseInt($(this).parent().parent().find("td.id-cell small").html()) - 1;
 
-			if ($(this).prop('checked')) {
-				// show candidate
 
-				var cand_id = parseInt($(this).parent().parent().find("td.id-cell small").html()) - 1;
-				var cand = document.event.candidates[cand_id];
-
-				console.log("cand id: " + $(this).parent().parent().find("td.id-cell small").html() + " " + cand_id);
-				
-				document.select_candidate(cand, scene, render);
-				
+			
+			if ($('#box-' + cand_id).prop('checked'))
+			{
+				document.showTrack(cand_id);
 			} else {
-				// hide candidate
+				document.hideTrack(cand_id);
 			}
+			
+
 		});
 
 		$("#candidates-table tbody tr").click(function(e){
@@ -77,6 +74,7 @@ $(function(){
 			// console.log($(this).find("td input")[0]);
 			
 			document.select_candidate(cand, scene, render);
+			document.showTrack(cand_id);
 		});
 
 		// configure tablesorter bootstrap theme
@@ -147,9 +145,9 @@ $(function(){
 			cand.data.phi0.toFixed(5) + '"><small>';
 		r[++j] = cand.data.phi0.toFixed(2);
 		r[++j] = '</small></td><td class="fl"><small>';
-		r[++j] = cand.data.dphi.toFixed(0);
+		r[++j] = cand.data.sphi.toFixed(0);
 		r[++j] = '</small></td><td class="fl"><small>';
-		r[++j] = cand.data.deta.toFixed(0);
+		r[++j] = cand.data.reta.toFixed(0);
 		r[++j] = '</small></td>';
 
 		/*
