@@ -1013,6 +1013,7 @@ $(function() {
 
             // check tp requirements
             if (is_valid && (min_pt || max_pt)) {
+
                 if (min_pt && cand.data.pt < min_pt) {
                     is_valid = false;
                 }
@@ -1023,6 +1024,7 @@ $(function() {
             }
             
             if (is_valid && (min_eta || max_eta)) {
+
                 if (max_eta && cand.data.eta > max_eta) {
                     is_valid = false;
                 }
@@ -1033,6 +1035,7 @@ $(function() {
             }
             
             if (is_valid && (min_stubs || max_stubs)) {
+
                 if (min_stubs && cand.data.stubs.length < min_stubs)
                 {
                     is_valid = false;
@@ -1044,7 +1047,9 @@ $(function() {
                 }
             }
 
-            if (is_valid && track_tp) {
+            
+            if (is_valid && track_tp != '-') {
+                
                 if (track_tp === 'Yes' && !cand.data.tp_obj_coords) {
                     is_valid = false;
                 }
@@ -1056,6 +1061,7 @@ $(function() {
 
             
             if (is_valid && (min_sphi || max_sphi)) {
+                
                 if (min_sphi && cand.data.sphi < min_sphi)
                 {
                     is_valid = false;
@@ -1069,6 +1075,7 @@ $(function() {
 
             
             if (is_valid && (min_reta || max_reta)) {
+                
                 if (min_reta && cand.data.eta < min_reta){
                     is_valid = false;
                 }
@@ -1079,7 +1086,7 @@ $(function() {
             }
 
             
-            if (is_valid && track_tp && (min_pt_tp || max_pt_tp)) {
+            if (is_valid && track_tp == 'Yes' && (min_pt_tp || max_pt_tp)) {
 
                 if (min_pt_tp && min_pt_tp > cand.data.tp_data.pt) {
                     is_valid = false;
@@ -1091,8 +1098,8 @@ $(function() {
                 
             }
             
-            if (is_valid && track_tp && (min_eta_tp || max_eta_tp)) {
-
+            if (is_valid && track_tp == 'Yes' && (min_eta_tp || max_eta_tp)) {
+                
                 if (min_eta_tp && min_eta_tp > cand.data.tp_data.eta) {
                     is_valid = false;
                 }
@@ -1111,5 +1118,6 @@ $(function() {
             }
         }
 
+        render();
     };
 });
