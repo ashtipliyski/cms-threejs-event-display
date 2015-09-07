@@ -4,9 +4,11 @@
 
 ### Application Layout:
 
-The left side of the screen is dedicated to the 3D rendering area, where by default only the beam is visualised as a thick grey line, together with a small red square at the bottom left corner of the area which holds an indicator of the orientation of the Cartesian coordinate system.
+The left side of the screen is dedicated to the 3D rendering area, where by default only the beam is visualised as a thick grey line, together with a small square square at the bottom left corner of the area which holds an indicator of the orientation of the Cartesian coordinate system.
 
-The right panel of the screen is filled with various display elements and control elements that provide information about the currently loaded event and allow for modification of the 3D scene on the left. Currently, the area is split into Event Summary display panel, View controls for fine control over the position of the camera in the 3D scene and a panel for controlling the visibility of the detector geometry.
+The main control panels are currently placed on the right of the screen and can be togged using the Event and Geometry buttons on top of the page. The Geometry panel offers camera visibility controls and a set of interfaces for loading and toggling the visibility of different detector geometry modules.
+
+Under Event, a set of controls is defined that helps in the exploration of the currently loaded parcicle collision event. These provide access to filtering functionality that can be used to change the currently visualised information in the 3D display area. The main component in the panel is the data table which visualises the track candidates and their corresponding kinematic parameters. The kinematic parameters of the associated true particle can be seen by hovering on an entry in the table. The entries that do not have an associated true particle are highlighted in red and this hover functionality is disabled for them.
 
 ### Loading Detector Geometry:
 
@@ -18,10 +20,18 @@ Similarly to the detector geometry, the event data is stored in plain ASCII file
 
 Once the data file has been loaded and parsed, the event components will be visualised in the 3D scene. The test event file used contains a small number of "tracks" processed from a **full** detector simulation, implemented in CMSSW. The elements of the event shown are fitted candidate tracks, represented by blue lines and stubs used to reconstruct those tracks, as red spheres. The next iteration of the application would allow for the handling of higher number of candidates by offering the ability to select candidates and change the visibility of their associated stubs true tracks and stubs on and off.
 
+### Exploring event data 
+
 
 ## Dependencies
 
 - jQuery
 - Bootstrap
+  + bootstrap waitingfor plugin 
 - tablesorter jQuery plugin: https://github.com/Mottie/tablesorter
-- 
+- three.js - main library
+  + three.js - Trackball Controls
+  + three.js - Combined Camera
+  + three.js - helvetiker typeface
+  + three.js - Projector.js (this needs to be moved)
+  + 

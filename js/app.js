@@ -23,7 +23,7 @@ $(function() {
 	init();
 	animate();
 
-	function init()
+    function init()
 	{
 		container = document.getElementById("canvas-container");
 		container_i = document.getElementById('inset');
@@ -1005,7 +1005,7 @@ $(function() {
 		var min_eta_tp = $('#tp-eta-min').val();
 		var max_eta_tp = $('#tp-eta-max').val();
 		
-						
+		
 		for (var i in document.event.candidates)
 		{
 			var cand = document.event.candidates[i];
