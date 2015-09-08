@@ -1,80 +1,80 @@
 body {padding: 0; margin:0}
 
 #ui-container {
-	padding: 0 10px 10px;
+    padding: 0 10px 10px;
     border: 1px solid #eee;
     border-radius: 10px;
     background: white;
-	padding-top:10px;
-	/*float: right;*/
+    padding-top:10px;
+    /*float: right;*/
     position: fixed;
     top: 10px;
     right: 20px;
-	width: 310px;
-	z:10;
+    width: 310px;
+    z:10;
 }
 
 #canvas-container {
-	/*width:700px; height:500px;*/
+    /*width:700px; height:500px;*/
 }
 #app-container {
-	width: 100%;
-	margin: 0 auto;
+    width: 100%;
+    margin: 0 auto;
 }
 
 #app-container {position: relative}
 #display #inset {
-	position: absolute;
-	bottom: 140px;
-	left: 10px;
-	border: 1px solid #666;
+    position: absolute;
+    bottom: 140px;
+    left: 10px;
+    border: 1px solid #666;
 }
 
 #candidates-table {
-	/*
-			   margin: 0 2px 0 0;
-			   padding: 0 5px;
+    /*
+               margin: 0 2px 0 0;
+               padding: 0 5px;
    */
-	margin-bottom:0px;
+    margin-bottom:0px;
 }
 
 #candidates-table tbody td,
 #candidates-table thead th,
 #candidates-table tfoot th {
-	text-align: center;
+    text-align: center;
 }
 
 #candidates-table tbody td[scope='row'] {padding-left: 10px;}
 
 #candidates-table td:last-child,
 #candidates-table th:last-child {
-	padding-right: 15px;
+    padding-right: 15px;
 }
 
 #candidates-table-sticky
 {
-	background: white;
+    background: white;
 }
 
 #cand-table-container
 {
-	position:relative;
-	max-height:350px;
-	/*max-height: 460px;*/
-	overflow-y: auto;
+    position:relative;
+    max-height:350px;
+    /*max-height: 460px;*/
+    overflow-y: auto;
 }
 
 #cand-panel {margin-bottom: 5px !important;}
 
 #focus-panel {
-	/*margin-top:10px;
-	margin-bottom: 10px !important;
+    /*margin-top:10px;
+    margin-bottom: 10px !important;
    */
     position: fixed;
     bottom: 10px;
     left: 10px;
 
-	width: 700px;
+    width: 700px;
 }
 
 .font-bold {text-weight: bold;}

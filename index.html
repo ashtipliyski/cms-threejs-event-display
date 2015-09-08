@@ -1,365 +1,365 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Three.js CMS Track Visualiser v0.4</title>
-		<meta charset="utf-8">
-		
-		<!-- Application styles -->
-		<link rel="stylesheet" href="css/app.css" />
-		<link rel="stylesheet"
+    <head>
+        <title>Three.js CMS Track Visualiser v0.4</title>
+        <meta charset="utf-8">
+        
+        <!-- Application styles -->
+        <link rel="stylesheet" href="css/app.css" />
+        <link rel="stylesheet"
               href="lib/bootstrap-3.3.5-mod/css/bootstrap.min.css" />
-		<!--
+        <!--
         <link rel="stylesheet" href="lib/tablesorter/css/theme.bootstrap.css" />  -->
-		<!--
+        <!--
         <link rel="stylesheet" href="lib/tablesorter/css/theme.default.css" /> -->
 
-		<!-- jQuery -->
-		<script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
-		<script type="text/javascript"
+        <!-- jQuery -->
+        <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript"
                 src="lib/tablesorter/js/jquery.tablesorter.combined.js"></script>
-		<!--
+        <!--
         <script type="text/javascript"
         src="lib/jquery.fixedheadertable.min.js"></script> -->
-		
-		<!-- Bootstrap library -->
-		<!-- <link rel="stylesheet"
+        
+        <!-- Bootstrap library -->
+        <!-- <link rel="stylesheet"
         href="lib/bootstrap-3.3.5-mod/css/bootstrap.css" /> -->
-		<script type="text/javascript"
+        <script type="text/javascript"
                 src="lib/bootstrap-3.3.5-mod/js/bootstrap.min.js"></script>
-		<script type="text/javascript"
+        <script type="text/javascript"
                 src="lib/bootstrap-waitingfor.js"></script>
 
-		<!-- Three.js library and controls -->
-		<script type="text/javascript" src="lib/three.min.js"></script>
-		<script type="text/javascript" src="lib/TrackballControls.js"></script>
-		<script type="text/javascript"
+        <!-- Three.js library and controls -->
+        <script type="text/javascript" src="lib/three.min.js"></script>
+        <script type="text/javascript" src="lib/TrackballControls.js"></script>
+        <script type="text/javascript"
                 src="lib/helvetiker_regular.typeface.js"></script>
-		<script type="text/javascript"
+        <script type="text/javascript"
                 src="lib/three.js/examples/js/cameras/CombinedCamera.js"></script>
-		<script type="text/javascript" src="lib/Projector.js"></script>
+        <script type="text/javascript" src="lib/Projector.js"></script>
 
-		<!-- Application code -->
-		<script type="text/javascript" src="js/candidate.js"></script>
-		<script type="text/javascript" src="js/geometry.js"></script>
-		<script type="text/javascript" src="js/camera.js"></script>
-		<script type="text/javascript" src="js/controls.js"></script>
-		<script type="text/javascript" src="js/handlers.js"></script>
-		<script type="text/javascript" src="js/config.js"></script>
-		<script type="text/javascript" src="js/app.js"></script>
+        <!-- Application code -->
+        <script type="text/javascript" src="js/candidate.js"></script>
+        <script type="text/javascript" src="js/geometry.js"></script>
+        <script type="text/javascript" src="js/camera.js"></script>
+        <script type="text/javascript" src="js/controls.js"></script>
+        <script type="text/javascript" src="js/handlers.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
 
-	</head>
-	<body>
+    </head>
+    <body>
         <div class="modal bs-example-modal-sm" tabindex="-1" role="dialog"
              aria-labelledby="mySmallModalLabel" id="cuts-modal">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
                                 aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="gridSystemModalLabel">Data Cuts</h4>
-					</div>
-					<div class="modal-body">
-						<form id="cuts-form" class="form-horizontal">
-							<div class="col-sm-6">
-								<h3>Candidate Requirements</h3>
-								<div class="form-group">
-									<label for="track-pt-min" class="control-label col-sm-2">
-										p<sub>T</sub>
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-pt-min"
-											   name="track-pt-min" placeholder="min pt"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-pt-max"
-											   name="track-pt-max" placeholder="max pt"/>
-									</div>
-									<div class="col-sm-2">
-										<p class="form-control-static">GeV</p>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="track-eta-min" class="control-label col-sm-2">
-										&eta;
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-eta-min"
-											   name="track-eta-min" placeholder="min &eta;"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-eta-max"
-											   name="track-eta-max" placeholder="max &eta;"/>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="track-stubs-min" class="control-label col-sm-2">
-										N<sub>stubs</sub>
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-stubs-min"
-											   name="track-stubs-min" placeholder="min stubs"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-stubs-max"
-											   name="track-stubs-max" placeholder="max stubs"/>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="track-tp" class="control-label col-sm-2"
-										   title="Do you require the fitted candidate to have a corresponding true particle?">
-										TP?
-									</label>
-									<div class="col-sm-4">
-										<select class="form-control" name="track-tp" id="track-tp">
-											<option selected="selected">-</option>
-											<option>Yes</option>
-											<option>No</option>
-										</select>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="track-sphi-min" class="control-label col-sm-2"
-										   title="Detector region in &phi;">
-										R<sub>&phi;</sub>
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-sphi-min"
-											   name="track-sphi-min" placeholder="min S_phi"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-sphi-max"
-											   name="track-sphi-max" placeholder="max S_phi"/>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="track-reta-min" class="control-label col-sm-2"
-										   title="Detector segment in &eta;">
-										S<sub>&eta;</sub>
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-reta-min"
-											   name="track-reta-min" placeholder="min R_eta"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="track-reta-max"
-											   name="track-reta-max" placeholder="max R_eta"/>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-6">
-								<h3>True particle Requirements</h3>
-								<div class="form-group">
-									<label for="tp-pt-min" class="control-label col-sm-2">
-										p<sub>T</sub>
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="tp-pt-min"
-											   name="tp-pt-min" placeholder="min pt"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="tp-pt-max"
-											   name="tp-pt-max" placeholder="max pt"/>
-									</div>
-									<div class="col-sm-2">
-										<p class="form-control-static">GeV</p>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="tp-eta-min" class="control-label col-sm-2">
-										&eta;
-									</label>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="tp-eta-min"
-											   name="tp-eta-min" placeholder="min &eta;"/>
-									</div>
-									<div class="col-sm-4">
-										<input type="text" class="form-control" id="tp-eta-max"
-											   name="tp-eta-max" placeholder="max &eta;"/>
-									</div>
-								</div>
-							</div>
-							<div class="clear"></div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						<button type="button" class="btn btn-primary" onclick="applyCuts()">
-							Apply cuts
-						</button>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div>
-		<div id="pleaseWaitDialog" class="modal hide" data-backdrop="static"
+                        <h4 class="modal-title" id="gridSystemModalLabel">Data Cuts</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="cuts-form" class="form-horizontal">
+                            <div class="col-sm-6">
+                                <h3>Candidate Requirements</h3>
+                                <div class="form-group">
+                                    <label for="track-pt-min" class="control-label col-sm-2">
+                                        p<sub>T</sub>
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-pt-min"
+                                               name="track-pt-min" placeholder="min pt"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-pt-max"
+                                               name="track-pt-max" placeholder="max pt"/>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="form-control-static">GeV</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="track-eta-min" class="control-label col-sm-2">
+                                        &eta;
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-eta-min"
+                                               name="track-eta-min" placeholder="min &eta;"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-eta-max"
+                                               name="track-eta-max" placeholder="max &eta;"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="track-stubs-min" class="control-label col-sm-2">
+                                        N<sub>stubs</sub>
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-stubs-min"
+                                               name="track-stubs-min" placeholder="min stubs"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-stubs-max"
+                                               name="track-stubs-max" placeholder="max stubs"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="track-tp" class="control-label col-sm-2"
+                                           title="Do you require the fitted candidate to have a corresponding true particle?">
+                                        TP?
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control" name="track-tp" id="track-tp">
+                                            <option selected="selected">-</option>
+                                            <option>Yes</option>
+                                            <option>No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="track-sphi-min" class="control-label col-sm-2"
+                                           title="Detector region in &phi;">
+                                        R<sub>&phi;</sub>
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-sphi-min"
+                                               name="track-sphi-min" placeholder="min S_phi"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-sphi-max"
+                                               name="track-sphi-max" placeholder="max S_phi"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="track-reta-min" class="control-label col-sm-2"
+                                           title="Detector segment in &eta;">
+                                        S<sub>&eta;</sub>
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-reta-min"
+                                               name="track-reta-min" placeholder="min R_eta"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="track-reta-max"
+                                               name="track-reta-max" placeholder="max R_eta"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <h3>True particle Requirements</h3>
+                                <div class="form-group">
+                                    <label for="tp-pt-min" class="control-label col-sm-2">
+                                        p<sub>T</sub>
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="tp-pt-min"
+                                               name="tp-pt-min" placeholder="min pt"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="tp-pt-max"
+                                               name="tp-pt-max" placeholder="max pt"/>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="form-control-static">GeV</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tp-eta-min" class="control-label col-sm-2">
+                                        &eta;
+                                    </label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="tp-eta-min"
+                                               name="tp-eta-min" placeholder="min &eta;"/>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="tp-eta-max"
+                                               name="tp-eta-max" placeholder="max &eta;"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="applyCuts()">
+                            Apply cuts
+                        </button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+        <div id="pleaseWaitDialog" class="modal hide" data-backdrop="static"
              data-keyboard="false">
-			<div class="modal-header">
-				<h1>Processing...</h1>
-			</div>
-			<div class="modal-body">
-				<div class="progress progress-striped active">
-					<div class="bar" style="width: 100%;"></div>
-				</div>
-			</div>
-		</div>
-		<div id="app-container">
-			<!-- <h4>CMS Track Visualiser v0.4</h4> -->
-			<div id="ui-container" id="control-tabs">
-				<ul class="nav nav-pills">
-					<li role="presentation" class="active">
-						<a href="#event-controls" role="tab" data-toggle="tab">Event</a>
-					</li>
-					<li role="presentation">
-						<a href="#geometry-controls" role="tab" data-toggle="tab">Geometry</a>
-					</li>
-				</ul>
-				<hr/>
-				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="event-controls">
-						<div id="cand-panel" class="panel panel-default">
-							<div class="panel-heading">Candidates List<span id="cands-no"></span> <input type="button" class="btn btn-default btn-xs pull-right" value="Load Data" onclick="loadData();"/></div>
-							<div class="panel-body">
-								<button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
+            <div class="modal-header">
+                <h1>Processing...</h1>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active">
+                    <div class="bar" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="app-container">
+            <!-- <h4>CMS Track Visualiser v0.4</h4> -->
+            <div id="ui-container" id="control-tabs">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active">
+                        <a href="#event-controls" role="tab" data-toggle="tab">Event</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#geometry-controls" role="tab" data-toggle="tab">Geometry</a>
+                    </li>
+                </ul>
+                <hr/>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="event-controls">
+                        <div id="cand-panel" class="panel panel-default">
+                            <div class="panel-heading">Candidates List<span id="cands-no"></span> <input type="button" class="btn btn-default btn-xs pull-right" value="Load Data" onclick="loadData();"/></div>
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
 
 
-							</div>
+                            </div>
 
-							<div id="cand-table-container">
-								<table id="candidates-table" class="table table-condensed table-hover tablesorter">
-									<thead>
-										<tr>
-											<th></th>
-											<th title="Particle ID (in list)">#</th>
-											<th title="Transverse momentum, GeV">p<sub>T</sub></th>
-											<th title="Charge in units of e">q</th>
-											<th title="Pseudo-rapidity">&eta;</th>
-											<th>&phi;<sub>0</sub></th>
-											<th title="&phi; segment">S<sub>&Phi;</sub></th>
-											<th title="&eta; region">R<sub>&eta;</sub></th>
-										</tr>
-									</thead>
-									<tfoot>
-										<tr>
-											<th></th>
-											<th title="Particle ID (in list)">#</th>
-											<th title="Transverse momentum, GeV">p<sub>T</sub></th>
-											<th title="Charge in units of e">q</th>
-											<th title="Pseudo-rapidity">&eta;</th>
-											<th>&phi;<sub>0</sub></th>
-											<th title="&phi; segment">S<sub>&Phi;</sub></th>
-											<th title="&eta; region">R<sub>&eta;</sub></th>
-										</tr>
-									</tfoot>
-									<tbody></tbody>
-								</table>
-							</div>
-							<div id="visibility-controls-container" class="panel-body">
-								<input type="button" class="btn btn-default btn-sm" value="Hide All" onclick="hideAll();"/>
-								<input type="button" class="btn btn-default btn-sm" value="Show All" onclick="showAll();"/>
-								<input type="button" class="btn btn-default btn-sm" value="Show Highlighted" onclick="showHighlighted();"/>
-							</div>							
-						</div>
-					</div>
-					<div role="tabpanel" class="tab-pane" id="geometry-controls">
-						
-						<h4>View Controls:</h4>
-						<div class="btn-group btn-group-sm">
-							<input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
-							<input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
-							<input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
-						</div>
-						<div>
-							Zoom:
-							<div class="btn-group btn-group-sm">
-  								<button type="button" class="btn btn-default" onclick="zoomIn()"s>
-									<span class="glyphicon glyphicon-plus"></span>
-								</button>
-								<button type="button" class="btn btn-default" onclick="zoomOut()">
-									<span class="glyphicon glyphicon-minus"></span>
-								</button>
-							</div>
-						</div>
-						<div>
-							<div>
-								Pan:
-								<div class="btn-group btn-group-sm">
-  									<button type="button" class="btn btn-default">
-										<span class="glyphicon glyphicon-arrow-left"></span>
-									</button>
-									<button type="button" class="btn btn-default">
-										<span class="glyphicon glyphicon-arrow-right"></span>
-									</button>
-  									<button type="button" class="btn btn-default">
-										<span class="glyphicon glyphicon-arrow-up" onclick="moveUp()""></span>
-									</button>
-									<button type="button" class="btn btn-default" onclick="moveDown()">
-										<span class="glyphicon glyphicon-arrow-down" ></span>
-									</button>
-									<button type="button" class="btn btn-default">
-										<span class="glyphicon glyphicon-home"></span>
-									</button>
-								</div>
-							</div>
-							<div>
-								Camera: 
-								<div class="btn-group btn-group-sm">
-									<button id="ortho-btn" type="button" class="btn btn-default" onclick="setOrthographic()">
-										Orthographic
-									</button>
-									<button id="persp-btn" type="button" class="btn btn-default active" onclick="setPerspective()">
-										Perspective
-									</button>
-								</div>
-							</div>
-						</div>
+                            <div id="cand-table-container">
+                                <table id="candidates-table" class="table table-condensed table-hover tablesorter">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th title="Particle ID (in list)">#</th>
+                                            <th title="Transverse momentum, GeV">p<sub>T</sub></th>
+                                            <th title="Charge in units of e">q</th>
+                                            <th title="Pseudo-rapidity">&eta;</th>
+                                            <th>&phi;<sub>0</sub></th>
+                                            <th title="&phi; segment">S<sub>&Phi;</sub></th>
+                                            <th title="&eta; region">R<sub>&eta;</sub></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th title="Particle ID (in list)">#</th>
+                                            <th title="Transverse momentum, GeV">p<sub>T</sub></th>
+                                            <th title="Charge in units of e">q</th>
+                                            <th title="Pseudo-rapidity">&eta;</th>
+                                            <th>&phi;<sub>0</sub></th>
+                                            <th title="&phi; segment">S<sub>&Phi;</sub></th>
+                                            <th title="&eta; region">R<sub>&eta;</sub></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <div id="visibility-controls-container" class="panel-body">
+                                <input type="button" class="btn btn-default btn-sm" value="Hide All" onclick="hideAll();"/>
+                                <input type="button" class="btn btn-default btn-sm" value="Show All" onclick="showAll();"/>
+                                <input type="button" class="btn btn-default btn-sm" value="Show Highlighted" onclick="showHighlighted();"/>
+                            </div>                          
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="geometry-controls">
+                        
+                        <h4>View Controls:</h4>
+                        <div class="btn-group btn-group-sm">
+                            <input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
+                            <input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
+                            <input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
+                        </div>
+                        <div>
+                            Zoom:
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-default" onclick="zoomIn()"s>
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                                <button type="button" class="btn btn-default" onclick="zoomOut()">
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                Pan:
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-arrow-up" onclick="moveUp()""></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="moveDown()">
+                                        <span class="glyphicon glyphicon-arrow-down" ></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-home"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                Camera: 
+                                <div class="btn-group btn-group-sm">
+                                    <button id="ortho-btn" type="button" class="btn btn-default" onclick="setOrthographic()">
+                                        Orthographic
+                                    </button>
+                                    <button id="persp-btn" type="button" class="btn btn-default active" onclick="setPerspective()">
+                                        Perspective
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-						<hr />
+                        <hr />
 
-						<div class="geom-controls">
-							<h4>Geometry Controls:</h4>
-							<div class="btn-group btn-group-sm">
-								<input class="btn btn-default" type="button" value="B1"/>
-								<input class="btn btn-default" type="button" value="B2" />
-								<input class="btn btn-default" type="button" value="B3" />
-								<input class="btn btn-default" type="button" value="B4" />
-								<input class="btn btn-default" type="button" value="B5" />
-								<input class="btn btn-default" type="button" value="B6" />
-							</div>
-							<div class="btn-group btn-group-sm">
-								<input class="btn btn-default" type="button" value="E1" />
-								<input class="btn btn-default" type="button" value="E2" />
-								<input class="btn btn-default" type="button" value="E3" />
-								<input class="btn btn-default" type="button" value="E4" />
-								<input class="btn btn-default" type="button" value="E5" />
-							</div>				
-							<div class="btn-group btn-group-sm">
-								<input class="btn btn-default" type="button" value="E-1" />
-								<input class="btn btn-default" type="button" value="E-2" />
-								<input class="btn btn-default" type="button" value="E-3" />
-								<input class="btn btn-default" type="button" value="E-4" />
-								<input class="btn btn-default" type="button" value="E-5" />
-							</div>
-						</div>
-						<div>
-							<input class="btn btn-default btn-sm" type="button" value="Load Geometry" onclick="loadGeometry();"/>
-						</div>
-					</div>
-				</div>
-				<!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
-			</div>
-			<div id="display">
-				<div id="canvas-container"></div>
-				<div id="inset"></div>
-			</div>
+                        <div class="geom-controls">
+                            <h4>Geometry Controls:</h4>
+                            <div class="btn-group btn-group-sm">
+                                <input class="btn btn-default" type="button" value="B1"/>
+                                <input class="btn btn-default" type="button" value="B2" />
+                                <input class="btn btn-default" type="button" value="B3" />
+                                <input class="btn btn-default" type="button" value="B4" />
+                                <input class="btn btn-default" type="button" value="B5" />
+                                <input class="btn btn-default" type="button" value="B6" />
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <input class="btn btn-default" type="button" value="E1" />
+                                <input class="btn btn-default" type="button" value="E2" />
+                                <input class="btn btn-default" type="button" value="E3" />
+                                <input class="btn btn-default" type="button" value="E4" />
+                                <input class="btn btn-default" type="button" value="E5" />
+                            </div>              
+                            <div class="btn-group btn-group-sm">
+                                <input class="btn btn-default" type="button" value="E-1" />
+                                <input class="btn btn-default" type="button" value="E-2" />
+                                <input class="btn btn-default" type="button" value="E-3" />
+                                <input class="btn btn-default" type="button" value="E-4" />
+                                <input class="btn btn-default" type="button" value="E-5" />
+                            </div>
+                        </div>
+                        <div>
+                            <input class="btn btn-default btn-sm" type="button" value="Load Geometry" onclick="loadGeometry();"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- <p>Note: Inset Axes correspond to x - red, y - green and z - blue</p> -->
+            </div>
+            <div id="display">
+                <div id="canvas-container"></div>
+                <div id="inset"></div>
+            </div>
 
-			<div id="focus-panel" class="panel panel-default pull-left">
-				<div class="panel-heading">Focus Information</div>
-				<div class="panel-body">
-					Focus: <span id="highlighted-tr">Information about the currently focused element will apper once you hover over it.</span><br/><br/>
-					Selected: <span id="selected-tr"></span>
-				</div>
-			</div>			
-			<div class="clear"></div>
-		</div>
-		
-	</body>
+            <div id="focus-panel" class="panel panel-default pull-left">
+                <div class="panel-heading">Focus Information</div>
+                <div class="panel-body">
+                    Focus: <span id="highlighted-tr">Information about the currently focused element will apper once you hover over it.</span><br/><br/>
+                    Selected: <span id="selected-tr"></span>
+                </div>
+            </div>          
+            <div class="clear"></div>
+        </div>
+        
+    </body>
 </html>
