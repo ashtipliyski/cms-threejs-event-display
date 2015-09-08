@@ -164,36 +164,18 @@ $(function(){
         r[++j] = '</small></td><td class="fl"><small>';
         r[++j] = cand.data.reta.toFixed(0);
         r[++j] = '</small></td>';
-
-        /*
-        if (cand.data.tp_obj_coords) {
-            r[++j] = "y";
-        } else {
-            r[++j] = "n";
-        }
-        r[++j] = '</small></td><td class="fl"><small>';
-        r[++j] = cand.data.stubs_coord.length;
-         */
         r[++j] = '</small></td></tr>';
-        //}
         
-        $('#candidates-table tbody').append(r.join(''));
-
-        
+        $('#candidates-table tbody').append(r.join(''));        
     };
     
     document.highlight_candidate = function (cand, scene, render)
     {
-
         if (document.prev_click_target == cand) {
             return;
         }
         
-        //var index = cand.id;
-        //document.prev_hover_target = document.event.candidates[index];
         document.prev_hover_target = cand;
-        // document.prev_hover_material = cand.material;
-
         cand.highlight();
 
         $("#focus-panel .panel-body #highlighted-tr").html(
@@ -211,11 +193,8 @@ $(function(){
                 document.prev_click_target, scene, render
             );
         }
-        
-        //var index = intersects[0].candect.id;
-        //document.prev_target = document.event.candidates[index];
+
         document.prev_click_target = cand;
-        // document.prev_material = cand.material;
 
         cand.show_info();
         cand.select();
@@ -244,29 +223,12 @@ $(function(){
     
     document.reset_candidate = function (cand, scene, render)
     {
-        if (cand == document.prev_click_target)
+        if (cand == document.prev_click_target) {
             return;
-        
-        //cand.material.opacity = document.prev_hover_material.opacity;
-        //cand.material.opacity = 0.5;
-        
-        //cand.material.linewidth = document.prev_hover_material.linewidth;
-
-        /*
-        cand.material.opacity = 0.2;
-        cand.material.linewidth = 2;
-        cand.material.color.setHex(0x0000ff);
-
-        and.material.needsUpdate = true;
-         */
+        }
 
         cand.restore();
         cand.hide_info();
-
-        /*
-         scene.remove(cand);
-        scene.add(cand);
-         */
 
         $("#focus-panel .panel-body #highlighted-tr").html("-- no focus --");
 

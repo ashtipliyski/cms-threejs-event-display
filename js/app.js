@@ -25,9 +25,6 @@ $(function() {
 
     var mouse;
     
-    // scene_width = window.innerWidth;
-    // scene_height = window.innerHeight;
-    
     init();
     animate();
 
@@ -35,22 +32,12 @@ $(function() {
     {
         container = document.getElementById("canvas-container");
         container_i = document.getElementById('inset');
-        //      container = document.createElement("div");
-        // document.body.appendChild(container);
         
         scene = new THREE.Scene();
-
-        /*
-         camera = new THREE.PerspectiveCamera(
-         //camera = new THREE.OrthographicCamera(
-         45, scene_width / scene_height, 0.0001, 10000
-         );
-         */
 
         camera = new THREE.CombinedCamera(
             scene_width/2, scene_height/2, 45, 0.0001, 10000, -500, 1000
         );
-        // camera.position.set(0, 300 ,500);
         camera.position.set(0, 0 ,1000);
 
         var line_geometry = new THREE.Geometry();
@@ -69,12 +56,10 @@ $(function() {
 
         renderer = new THREE.WebGLRenderer();
         renderer.setClearColor(0xffffff);
-        // renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setSize(scene_width, scene_height);
         
         container.addEventListener('mousedown', onSceneMouseDown, false);
         container.addEventListener('mousemove', onSceneMouseMove, false);
-        // document.addEventListener('mousemove', onDocumentMouseMove, false);
 
         window.addEventListener('resize', onWindowResize, false);
         
@@ -88,17 +73,13 @@ $(function() {
         controls.noPan = false;
 
         controls.staticMoving = true;
-        // controls.dynamicDampingFactor = 0.03;
-
         controls.keys = [ 65, 83, 68 ];
-
         
         controls.addEventListener( 'change', render );
 
         container.appendChild(renderer.domElement);
 
-        // inset elements
-        
+        // inset elements        
         renderer_i = new THREE.WebGLRenderer({
             alpha: true
         });
@@ -169,14 +150,6 @@ $(function() {
 
         var projector = new THREE.Projector();
         mouse = new THREE.Vector2();
-
-        /*
-         var light = new THREE.AmbientLight( 0x333333 ); // soft white light
-         scene.add( light );
-         var light = new THREE.PointLight(0xffffff,1,4500);
-         light.position.set(-300,1000,-300);
-         scene.add(light);
-         */
 
         render();
         animate();
@@ -296,16 +269,12 @@ $(function() {
 
     function animate()
     {
-        // console.log(camera.position);
-        
         requestAnimationFrame(animate);
         
         camera_i.position.copy( camera.position );
         camera_i.position.sub( controls.target ); // added by @libe
         camera_i.position.setLength( CAM_DISTANCE );
-
         camera_i.lookAt( scene_i.position );
-
 
         controls.update();
     }
@@ -380,8 +349,7 @@ $(function() {
             }
         }
         
-        document.visible_geoms[identifier] = true;
-        
+        document.visible_geoms[identifier] = true;        
 
         render();
     };
@@ -440,14 +408,6 @@ $(function() {
 
     document.zoomIn = function ()
     {
-        /*
-         console.log("zooming in");
-         camera.position.x -= 0.1 * camera.position.x;
-         camera.position.y -= 0.1 * camera.position.y;
-         camera.position.z -= 0.1 * camera.position.z;
-         camera.updateProjectionMatrix();
-         */
-
         console.log(camera.zoom);
         camera.setZoom(camera.zoom + camera.zoom*0.1);
 
@@ -456,15 +416,6 @@ $(function() {
 
     document.zoomOut = function ()
     {
-        /*
-         console.log("zooming out");
-         camera.position.x += 0.1 * camera.position.x;
-         camera.position.y += 0.1 * camera.position.y;
-         camera.position.z += 0.1 * camera.position.z;
-         camera.updateProjectionMatrix();
-         */
-
-        
         camera.setZoom(camera.zoom - camera.zoom*0.1);
         render();
     };
@@ -549,9 +500,6 @@ $(function() {
                 processData: true,
                 success: function(data) {
                     console.log("Data successfuly loaded from " + full_filename);
-                    //console.log(data);
-                    //console.log(external_data);
-
 
                     document.visualiseEvent(external_data.candidates);
 
@@ -602,25 +550,6 @@ $(function() {
         if (document.prev_hover_target) {
 
             document.reset_candidate(document.prev_hover_target, scene, render);
-            
-            // document.prev_hover_target.material = document.prev_material;
-            //document.prev_hover_target.material.opacity = document.prev_hover_material.opacity;
-
-            //document.prev_hover_target.material.linewidth = document.prev_hover_material.linewidth;
-
-            /*
-             document.prev_hover_target.material.color.setHex(0x0000ff);
-
-             // document.prev_hover_target.object.material = document.prev_material;
-
-             // document.prev_hover_target.object.color = {'r': 0, 'g': 0, 'b':1};
-             scene.remove(document.prev_hover_target);
-             scene.add(document.prev_hover_target);
-
-             // console.log("resetting");
-
-             render();
-             */
         }
 
         
@@ -633,21 +562,6 @@ $(function() {
             }
 
             document.highlight_candidate(obj, scene, render);
-
-            /*
-             //var index = obj.id;
-             //document.prev_hover_target = document.event.candidates[index];
-             document.prev_hover_target = obj;
-             document.prev_hover_material = obj.material;
-
-             obj.material.transparent = true;
-             //obj.material.linewidth = 4;
-             //obj.material.opacity = 1;
-
-             obj.material.color.setHex(0xb85423);
-
-             render();
-             */
         }
     };
 
@@ -678,46 +592,12 @@ $(function() {
             if (document.prev_target) {
 
                 document.reset_click_candidate(document.prev_target, scene, render);
-                /*
-                 // document.prev_target.material = document.prev_material;
-                 document.prev_target.material.opacity = document.prev_material.opacity;
-                 document.prev_target.material.linewidth = document.prev_material.linewidth;
-                 document.prev_target.material.color.setHex(0x0000ff);
-
-                 scene.remove(document.prev_target);
-                 scene.add(document.prev_target);
-
-                 document.prev_target.hide_info();
-
-                 render();
-                 */
             }
 
             var obj = intersects[0].object;
 
             document.select_candidate(obj, scene, render);
-            /*
-
-             //var index = intersects[0].object.id;
-             //document.prev_target = document.event.candidates[index];
-             document.prev_target = obj;
-             document.prev_material = obj.material;
-
-             obj.show_info();
-
-             obj.material.transparent = true;
-             obj.material.opacity = 0.9;
-             obj.material.linewidth = 3;
-             obj.material.color.setHex(0xaa00dd);
-
-             document.prev_hover_target = null;
-
-             render();
-             console.log("clicked");*/
-        } else {
-            // console.log("no intersects");
-
-        }
+        } 
     };  
 
     document.setPerspective = function()
@@ -784,9 +664,7 @@ $(function() {
         scene.add(document.event.candidates[id].tjs_obj);
         document.visible_tracks.push(document.event.candidates[id]);
 
-        $('#box-' + id).prop('checked', true);
-        
-        
+        $('#box-' + id).prop('checked', true);        
     };
 
     document.hideTrack = function(id)
@@ -794,11 +672,8 @@ $(function() {
         document.event.candidates[id].hide_info();
         document.event.candidates[id].restore();
         scene.remove(document.event.candidates[id].tjs_obj);
-
-        
         
         $('#box-' + id).prop('checked', false);
-        
     };
 
     document.applyCuts = function ()
@@ -952,15 +827,6 @@ $(function() {
 
     function onWindowResize()
     {
-        /*
-        scene_height = window.innerHeight;
-        scene_width = window.innerWidth;
-
-        camera.aspect = 1;
-        camera.updateProjectionMatrix();
-         
-         renderer.setSize(scene_width, scene_height);
-         */
         /**
          * taken from: https://github.com/mrdoob/three.js/issues/69
          */
