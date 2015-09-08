@@ -1,19 +1,24 @@
 body {padding: 0; margin:0}
 
 #ui-container {
-	/*padding: 0 10px 10px;*/
+	padding: 0 10px 10px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: white;
 	padding-top:10px;
-	float: right;
-	width: 290px;
-	border: 1px;
+	/*float: right;*/
+    position: fixed;
+    top: 10px;
+    right: 20px;
+	width: 310px;
 	z:10;
 }
 
 #canvas-container {
-	width:700px; height:500px;
+	/*width:700px; height:500px;*/
 }
 #app-container {
-	width: 1000px;
+	width: 100%;
 	margin: 0 auto;
 }
 
@@ -62,8 +67,12 @@ body {padding: 0; margin:0}
 #cand-panel {margin-bottom: 5px !important;}
 
 #focus-panel {
-	margin-top:10px;
+	/*margin-top:10px;
 	margin-bottom: 10px !important;
+   */
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
 
 	width: 700px;
 }

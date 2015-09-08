@@ -1,3 +1,9 @@
+/**
+ * @TODO: Make the UI automatically re-adjust to window resize events
+ * 
+ */
+var $ = $ || {};
+
 $(function() {
 
     var scene, camera, renderer, container;
@@ -12,8 +18,10 @@ $(function() {
     
     var geometry, material, mesh, plane;
 
-    var scene_width = 700;
-    var scene_height = 500;
+    //var scene_width = 700;
+    //var scene_height = 500;
+    var scene_width = window.innerWidth - 5;
+    var scene_height = window.innerHeight - 5;
 
     var mouse;
     
@@ -67,6 +75,8 @@ $(function() {
         container.addEventListener('mousedown', onSceneMouseDown, false);
         container.addEventListener('mousemove', onSceneMouseMove, false);
         // document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+        window.addEventListener('resize', onWindowResize, false);
         
         controls = new THREE.TrackballControls(camera, container);
 
@@ -494,203 +504,17 @@ $(function() {
         var cand_i = 0; // index of candidate
         for ( var i in candidates_list)
         {
-            v_coords = candidates_list[i].coords;
+            var cand = new Candidate(candidates_list[i], i, scene);
 
-            if (v_coords.length == 0) {
-                // console.log("no coords found");
-                continue;
-            }
-
-            vertices_vect = [];
-            for (var m in v_coords)
-            {
-                vertices_vect.push(new THREE.Vector3(
-                    v_coords[m][0],
-                    v_coords[m][1],
-                    v_coords[m][2]
-                ));
-
-                
-                if (visualise_points) {
-                    
-                    var point = new THREE.Mesh(
-                        new THREE.SphereGeometry(1.5, 20, 20),
-                        new THREE.MeshBasicMaterial({color: 0x000000})
-                    );
-                    point.position.set(
-                        v_coords[m][0],
-                        v_coords[m][1],
-                        v_coords[m][2]
-                    );
-
-                    scene.add(point);
-                }
-            }
-
-            // track as a line
-            curve = new THREE.SplineCurve3(vertices_vect);
-            geom = new THREE.Geometry();
-            geom.vertices = curve.getPoints(vertices_vect.length + 50);
-
-            var cand = new THREE.Line(
-                geom,
-                new THREE.LineBasicMaterial({
-                    color: 0x0000ff,
-                    linewidth: 2,
-                    transparent: true,
-                    opacity: 0.2
-                })
-            );
-
-            var obj = candidates_list[i];
-
-            cand.data = {};
-            
-            cand.data.id = cand_i;
-
-            cand.data.stubs_obj_list = [];
-            cand.data.stubs = obj.stubs;
-            cand.data.tp_obj_coords = obj.track.coords;
-            if (obj.track.coords) {
-                cand.data.tp_data = {};
-                cand.data.tp_data.pt = obj.track.pt;
-                cand.data.tp_data.phi0 = obj.track.phi0;
-                cand.data.tp_data.eta = obj.track.eta;
-                cand.data.tp_data.m = obj.track.m;
-                cand.data.tp_data.theta = obj.track.theta;
-                cand.data.tp_data.q = obj.track.q;
-            }
-            cand.data.tp_obj = {};
-
-            cand.data.pt = obj.pt;
-            cand.data.q = obj.q;
-            cand.data.eta = obj.eta;
-            cand.data.phi0 = obj.phi0;
-            cand.data.m = obj.m;            
-            cand.data.theta = obj.theta;
-            cand.data.chi2dof = obj.chi2dof;
-            cand.data.sphi = obj.phi_sec;
-            cand.data.reta = obj.eta_reg;
 
             document.add_candidate(cand);
-
-            cand.get_info_text = function ()
-            {
-                r_text = "";
-                
-                r_text += "<strong>ID: " + (this.data.id + 1) + "</strong>; ";
-                r_text += "p<sub>T</sub>: " + this.data.pt.toFixed(2) + " GeV; ";
-                r_text += "&phi;<sub>0</sub>: " + this.data.phi0.toFixed(2) + " ; ";
-                r_text += "&eta;: " + this.data.eta.toFixed(2) + " ; ";
-                r_text += "q: " + this.data.q + " e; ";
-                // r_text += "m: " + this.data.m + " GeV; ";
-                // r_text += "&theta;: " + this.data.theta.toFixed(2) + " ; ";
-                r_text += "&chi;<sup>2</sup><sub>red</sub>: " +
-                    this.data.chi2dof.toFixed(2) + " ; ";
-                
-                r_text += "n<sub>p</sub>: " + this.geometry.vertices.length + " ; ";
-
-                return r_text;
-            };
-
-            cand.show_info = function ()
-            {
-                var stubs_list = this.data.stubs;
-
-                for( var key in stubs_list)
-                {
-                    
-                    var x = stubs_list[key].coords[0];
-                    var y = stubs_list[key].coords[1];
-                    var z = stubs_list[key].coords[2];
-                    
-                    var s_geometry = new THREE.SphereGeometry(3, 20, 20);
-
-                    var s_color = 0x000000;
-                    if (!stubs_list[key].genuine) {
-                        s_color = 0xff0000;
-                    }
-                    
-                    var stub = new THREE.Mesh(
-                        s_geometry,
-                        new THREE.MeshBasicMaterial({color: s_color})
-                    );
-                    stub.position.set(x, y, z);
-
-                    scene.add(stub);
-
-                    this.data.stubs_obj_list.push(stub);
-                    document.event.stubs.push(stub);
-                }
-
-                var tracks_list = this.data.tp_obj_coords;
-
-                var v_coords = tracks_list;
-
-                if (tracks_list) {
-                    var vertices_vect = [];
-                    for (var j in v_coords)
-                    {
-                        vertices_vect.push(new THREE.Vector3(
-                            v_coords[j][0],
-                            v_coords[j][1],
-                            v_coords[j][2]
-                        ));
-                    }
-
-                    // track as a line
-                    var curve = new THREE.SplineCurve3(vertices_vect);
-                    var geom = new THREE.Geometry();
-                    geom.vertices = curve.getPoints(50);
-
-                    var track = new THREE.Line(
-                        geom,
-                        new THREE.LineBasicMaterial({
-                            color: 0x00ff00,
-                            linewidth: 10
-                        })
-                    );
-
-                    scene.remove(scene.children);
-                    scene.add(track);
-                    
-                    this.data.tp_obj = track;
-
-                    document.event.tp = track;
-
-                } else {
-                    //console.log("no tp for particle");
-                }
-                
-                // track as a tube
-                // var mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
-                // var tubeGeometry = new THREE.TubeGeometry(new THREE.SplineCurve3(vertices_vect), 60, 1);
-                // var track = new THREE.Mesh(tubeGeometry, mat);
-                
-                
-                // document.event.tracks.push(track);
-                //}
-                
-            };
-
-            cand.hide_info = function ()
-            {
-                for (var n in this.data.stubs_obj_list)
-                {
-                    scene.remove(this.data.stubs_obj_list[n]);
-                }
-
-                scene.remove(this.data.tp_obj);
-                // console.log("hiding info");
-
-                document.event.tp = null;
-                document.event.stubs = [];
-            };
             
             document.event.candidates.push(cand);
             document.visible_tracks.push(cand);
-            
-            scene.add(cand);
+
+            if (cand.tjs_obj) {
+                scene.add(cand.tjs_obj);
+            }
             
             cand_i++;
         }
@@ -943,9 +767,11 @@ $(function() {
     {
         document.hideAll();
 
-        var id = parseInt($('#candidates-table tr.info .id-cell small').html()) - 1;
+        var id_str = $('#candidates-table tr.info .id-cell small').html();
+        var id = parseInt(id_str) - 1;
         var cand = document.event.candidates[id];
         cand.show_info();
+        cand.select();
 
         console.log(id);
         document.showTrack(id);
@@ -955,7 +781,7 @@ $(function() {
 
     document.showTrack = function(id)
     {
-        scene.add(document.event.candidates[id]);
+        scene.add(document.event.candidates[id].tjs_obj);
         document.visible_tracks.push(document.event.candidates[id]);
 
         $('#box-' + id).prop('checked', true);
@@ -966,7 +792,10 @@ $(function() {
     document.hideTrack = function(id)
     {
         document.event.candidates[id].hide_info();
-        scene.remove(document.event.candidates[id]);
+        document.event.candidates[id].restore();
+        scene.remove(document.event.candidates[id].tjs_obj);
+
+        
         
         $('#box-' + id).prop('checked', false);
         
@@ -1119,5 +948,35 @@ $(function() {
         }
 
         render();
+    };
+
+    function onWindowResize()
+    {
+        /*
+        scene_height = window.innerHeight;
+        scene_width = window.innerWidth;
+
+        camera.aspect = 1;
+        camera.updateProjectionMatrix();
+         
+         renderer.setSize(scene_width, scene_height);
+         */
+        /**
+         * taken from: https://github.com/mrdoob/three.js/issues/69
+         */
+        if(camera.inPerspectiveMode){
+            camera.cameraP.aspect = window.innerWidth / window.innerHeight;
+            camera.cameraP.updateProjectionMatrix();
+        } else {
+            camera.cameraO.left = window.innerWidth / - 2;
+            camera.cameraO.right = window.innerWidth / 2;
+            camera.cameraO.top = window.innerHeight / 2;
+            camera.cameraO.bottom = window.innerHeight / - 2;
+            camera.cameraO.updateProjectionMatrix();
+        }
+        renderer.setSize( window.innerWidth - 5, window.innerHeight - 5 );
+
+        render();
+
     };
 });

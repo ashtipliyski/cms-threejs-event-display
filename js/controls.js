@@ -1,7 +1,11 @@
+var $ = $ || {};
+
 $(function(){
 
     $("#control-tabs a:last").tab("show");
-    // $('#candidates-table').fixedHeaderTable({footer:true, cloneHeadtoFoot:true, fixedColumn:false});
+    // $('#candidates-table').fixedHeaderTable(
+    // {footer:true, cloneHeadtoFoot:true, fixedColumn:false}
+    //);
 
     var sorter_function = function (node)
     {
@@ -31,13 +35,14 @@ $(function(){
             //return;
             //e.preventDefault();
             e.stopPropagation();
-            
-            var cand_id = parseInt($(this).parent().parent().find("td.id-cell small").html()) - 1;
+
+            var id_str = $(this).parent().parent().find("td.id-cell small").
+                    html();
+            var cand_id = parseInt(id_str) - 1;
 
 
             
-            if ($('#box-' + cand_id).prop('checked'))
-            {
+            if ($('#box-' + cand_id).prop('checked')) {
                 document.showTrack(cand_id);
             } else {
                 document.hideTrack(cand_id);
@@ -96,7 +101,8 @@ $(function(){
         $('#candidates-table-sticky')
          */
         
-        // this should be moved to a place where it is called only once after all candidates are loaded not after every single candidate
+        // this should be moved to a place where it is called only once after
+        // all candidates are loaded not after every single candidate
         $('[data-toggle="tooltip"]').tooltip({container:'body'});
     };
 
@@ -116,25 +122,34 @@ $(function(){
             class_name += ' danger';
         }
         /*
-<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Tooltip on left">Tooltip on left</button>
+         <button type="button" class="btn btn-default" data-toggle="tooltip" 
+         data-placement="left" title="Tooltip on left">Tooltip on left</button>
          */
 
         var tooltip_str = '';
 
-        if (cand.data.tp_data) {
+        if (cand.data.tp_data.hasOwnProperty("pt")) {
+            
             tooltip_str += 'True particle: \n';
-            tooltip_str += 'pt = ' + cand.data.tp_data.pt.toFixed(2) + ' GeV/c; ';
+            tooltip_str += 'pt = ' + cand.data.tp_data.pt.toFixed(2) +
+                ' GeV/c; ';
             tooltip_str += 'q = ' + cand.data.tp_data.q.toFixed(0) + 'e; ';
             tooltip_str += 'eta = ' + cand.data.tp_data.eta.toFixed(2) + '; ';
             tooltip_str += 'phi0 = ' + cand.data.tp_data.phi0.toFixed(2) + '; ';
-            tooltip_str += 'm = '+ cand.data.tp_data.m.toFixed(2) + ' GeV/c^2 ; ';
+            tooltip_str += 'm = '+ cand.data.tp_data.m.toFixed(2) +
+                ' GeV/c^2 ; ';
         }
         
-        r[++j] = '<tr id="el-' + cand.data.id + '" class="'+class_name+'" data-toggle="tooltip" data-placement="left" title="' + tooltip_str + '">';
-        r[++j] = '<td scope="row"><small class="hidden">1</small><input id="box-' + cand.data.id + '" type="checkbox" checked="checked"></td>';
+        r[++j] = '<tr id="el-' + cand.data.id + '" class="' + class_name +
+            '" data-toggle="tooltip" data-placement="left" title="' +
+            tooltip_str + '">';
+        r[++j] = '<td scope="row"><small class="hidden">1</small>' +
+            '<input id="box-' + cand.data.id +
+            '" type="checkbox" checked="checked"></td>';
         r[++j] = '<td class="int id-cell"><small>';
         r[++j] = parseInt(cand.data.id) + 1;
-        r[++j] = '</small></td><td class="fl" title="'+cand.data.pt.toFixed(5)+'"><small>';
+        r[++j] = '</small></td><td class="fl" title="' +
+            cand.data.pt.toFixed(5) + '"><small>';
         r[++j] = cand.data.pt.toFixed(2);
         r[++j] = '</small></td><td class="int"><small>';
         r[++j] = cand.data.q.toFixed(0);
@@ -177,14 +192,9 @@ $(function(){
         //var index = cand.id;
         //document.prev_hover_target = document.event.candidates[index];
         document.prev_hover_target = cand;
-        document.prev_hover_material = cand.material;
+        // document.prev_hover_material = cand.material;
 
-        cand.material.transparent = true;
-        cand.material.linewidth = 4;
-        cand.material.opacity = 1;
-
-        // cand.material.color.setHex(0xb85423);
-        cand.material.color.setHex(0xff0000);
+        cand.highlight();
 
         $("#focus-panel .panel-body #highlighted-tr").html(
             "Track " + cand.get_info_text()
@@ -205,14 +215,10 @@ $(function(){
         //var index = intersects[0].candect.id;
         //document.prev_target = document.event.candidates[index];
         document.prev_click_target = cand;
-        document.prev_material = cand.material;
+        // document.prev_material = cand.material;
 
         cand.show_info();
-
-        cand.material.transparent = true;
-        cand.material.opacity = 0.9;
-        cand.material.linewidth = 5;
-        cand.material.color.setHex(0xaa00dd);
+        cand.select();
 
         document.prev_hover_target = null;
 
@@ -226,15 +232,8 @@ $(function(){
 
     document.reset_click_candidate = function (cand, scene, render)
     {
-        cand.material.opacity = 0.2; //document.prev_material.opacity;
-        cand.material.linewidth = 2;//document.prev_material.linewidth;
-        cand.material.color.setHex(0x0000ff);
-
-        scene.remove(cand);
-        scene.add(cand);
-
         cand.hide_info();
-
+        cand.restore();
         
         $("#candidates-table tr#el-" + cand.data.id).removeClass("info");
         
@@ -253,19 +252,22 @@ $(function(){
         
         //cand.material.linewidth = document.prev_hover_material.linewidth;
 
+        /*
         cand.material.opacity = 0.2;
         cand.material.linewidth = 2;
         cand.material.color.setHex(0x0000ff);
 
-        cand.material.needsUpdate = true;
-        
+        and.material.needsUpdate = true;
+         */
+
+        cand.restore();
+        cand.hide_info();
 
         /*
          scene.remove(cand);
         scene.add(cand);
          */
 
-        cand.hide_info();
         $("#focus-panel .panel-body #highlighted-tr").html("-- no focus --");
 
         render();
