@@ -477,7 +477,12 @@ $(function() {
     
     document.loadData = function ()
     {
-        var filename = "test_full.js";
+        var filename = $('input[type="radio"]:checked').val();
+        
+        if (!filename) {
+            alert("Please select a filename from the list first.");
+            return;
+        }
 
         document.loadEvent(filename);
     };
@@ -490,7 +495,7 @@ $(function() {
             scene.remove(event);
         }
 
-        var full_filename = "events/" + filename;
+        var full_filename = filename;
 
         waitingDialog.show("Loading event", {dialogSize: 'sm'});
         $.ajax(

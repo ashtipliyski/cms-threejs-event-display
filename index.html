@@ -35,6 +35,7 @@
 
         <!-- Application code -->
         <script type="text/javascript" src="js/candidate.js"></script>
+        <script type="text/javascript" src="js/events.js"></script>
         <script type="text/javascript" src="js/geometry.js"></script>
         <script type="text/javascript" src="js/camera.js"></script>
         <script type="text/javascript" src="js/controls.js"></script>
@@ -177,8 +178,10 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="applyCuts()">
+                        <button type="button" class="btn btn-default"
+                                data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary"
+                                onclick="applyCuts()">
                             Apply cuts
                         </button>
                     </div>
@@ -201,21 +204,36 @@
             <div id="ui-container" id="control-tabs">
                 <ul class="nav nav-pills">
                     <li role="presentation" class="active">
-                        <a href="#event-controls" role="tab" data-toggle="tab">Event</a>
+                        <a href="#event-controls" role="tab"
+                           data-toggle="tab">Event</a>
                     </li>
                     <li role="presentation">
-                        <a href="#geometry-controls" role="tab" data-toggle="tab">Geometry</a>
+                        <a href="#geometry-controls" role="tab"
+                           data-toggle="tab">Geometry</a>
                     </li>
                 </ul>
                 <hr/>
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="event-controls">
+                    <div id="event-controls" role="tabpanel"
+                         class="tab-pane active">
                         <div id="cand-panel" class="panel panel-default">
-                            <div class="panel-heading">Candidates List<span id="cands-no"></span> <input type="button" class="btn btn-default btn-xs pull-right" value="Load Data" onclick="loadData();"/></div>
+                            <div class="panel-heading">
+                                Candidates List<span id="cands-no"></span>
+                       </div>
                             <div class="panel-body">
-                                <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".bs-example-modal-sm">Data cuts</button>
-
-
+                                <button type="button" data-toggle="modal" 
+                                        class="btn btn-sm btn-default"
+                                        data-target=".bs-example-modal-sm">
+                                    Data cuts
+                                </button>
+                                <input type="button"
+                                       class="btn btn-default btn-sm pull-right"
+                                       value="Load Data" onclick="loadData();"/>
+                                <hr/>
+                                <span>Files list:</span>
+                                <div id="event-files-list-container"></div>
+                                <hr/>
+                                
                             </div>
 
                             <div id="cand-table-container">
