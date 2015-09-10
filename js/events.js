@@ -28,8 +28,8 @@ $(function(){
                             2
                         );
 
-                        if (file.indexOf("\\") == -1) {
-                            file = "events\\" + file;
+                        if (file.indexOf("/") == -1) {
+                            file = "events/" + file;
                         }
 
                         if (extension === "js") {
