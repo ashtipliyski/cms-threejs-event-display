@@ -25,9 +25,11 @@ body {padding: 0; margin:0}
 #app-container {position: relative}
 #display #inset {
     position: absolute;
-    bottom: 140px;
+    bottom: 160px;
     left: 10px;
-    border: 1px solid #666;
+    border: 1px solid #eee;
+    background: white;
+    border-radius: 10px;
 }
 
 #candidates-table {

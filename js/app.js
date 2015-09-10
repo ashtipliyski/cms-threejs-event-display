@@ -257,6 +257,11 @@ $(function() {
                     document.geometry_loaded = true;
                     waitingDialog.hide();
 
+                    
+                    $("input[value='Load Geometry']").addClass("disabled")
+                        .val("Geometry Loaded")
+                        .prop('disabled', true);
+
                     render();
                 },
                 fail: function(data) {
@@ -489,11 +494,12 @@ $(function() {
 
     document.loadEvent = function (filename)
     {
-        console.log("Loading events/" + filename);
-
         if (document.event) {
+            return;
             scene.remove(event);
         }
+        
+        console.log("Loading events/" + filename);
 
         var full_filename = filename;
 
@@ -511,6 +517,10 @@ $(function() {
                     document.external_data = external_data;
                     
                     waitingDialog.hide();
+
+                    $("input[value='Load Data']").addClass("disabled")
+                        .val("Data Loaded")
+                        .prop('disabled', true);
                 },
                 error: function (data, textstatus, error) {
                     console.log("Loading Test Status: " + textstatus);
