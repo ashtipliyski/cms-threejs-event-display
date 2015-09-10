@@ -28,7 +28,7 @@ $(function(){
                             2
                         );
 
-                        if (!file.indexOf("\\")) {
+                        if (file.indexOf("\\") == -1) {
                             file = "events\\" + file;
                         }
 
