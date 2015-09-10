@@ -3,7 +3,7 @@ var $ = $ || {};
 $(function(){
     document.get_event_files = function ()
     {
-        var events_folder = "/events";
+        var events_folder = "events";
         var event_files = [];
         
         $.ajax(
