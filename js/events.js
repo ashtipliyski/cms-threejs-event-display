@@ -28,11 +28,13 @@ $(function(){
                             2
                         );
 
-                        console.log(file);
+                        if (!file.indexOf("\\")) {
+                            file = "events\\" + file;
+                        }
 
                         if (extension === "js") {
                             event_files.push(file);
-                        }                        
+                        }           
                     }
 
                     document.generate_event_files_list(event_files);
