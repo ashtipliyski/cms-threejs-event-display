@@ -13,7 +13,7 @@ $(function(){
                 success: function (data) {
 
                     var links_list = data.match(
-                            /<a href="([/a-z_0-9\-]+\.js)">[a-z_0-9\-]+\.js<\/a>/g
+                        /<a href="([/a-z_0-9\-]+\.js)">[a-z_0-9\-]+\.js<\/a>/g
                     );
 
                     for (var i in links_list)
@@ -40,7 +40,7 @@ $(function(){
                     document.generate_event_files_list(event_files);
                 },
                 fail: function (data) {
-                    console.log("failure loading event files");
+                    console.log("Failure loading event files.");
                 }
             }
         );
@@ -67,7 +67,7 @@ $(function(){
 
             console.dir(label);
             
-            $("#event-files-list-container").append(div_container);
+            $("#remote-event-files-list-container").append(div_container);
         }
     };
     

@@ -234,4 +234,46 @@ $(function(){
 
         render();
     };
+
+
+    // control elements event handlers
+
+    $('#data-tabs a').click(function(e) {
+        e.preventDefault();
+        $(this).tab('show');
+
+        document.app_config.data_source = $(this).attr("aria-controls");
+    });
+
+
+    $("#load-data-btn").click(function(e){
+        if (document.app_config.data_source == 'local') {
+
+            if ($("#local-event-files-list-container input:checked").length == 0) {
+                return;
+            }
+            
+            var selected_file =
+                    $("#local-event-files-list-container input:checked").val();
+            var file = document.app_config.local_data_files[selected_file];
+            var reader = new FileReader();
+            reader.onload = (function(f_ref){
+                return function (e) {
+                    var str_data = reader.result;
+                    var json_str = str_data.substr(20, str_data.length - 22);
+
+                    var external_data = $.parseJSON(json_str);
+                    document.external_data = external_data;
+                    document.visualiseEvent(external_data.candidates);
+                };
+            })(file);
+
+            reader.readAsText(file);
+
+        } else {
+            document.loadData();
+        }
+
+        $('#data-man-dialog').modal('hide');
+    });
 });

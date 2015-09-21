@@ -6,6 +6,11 @@ var $ = $ || {};
 
 $(function() {
 
+    document.app_config = {
+        "data_source": "local",
+        "local_data_files": []
+    };    
+
     var scene, camera, renderer, container;
 
     // inset scene elements
@@ -439,6 +444,7 @@ $(function() {
 
     document.visualiseEvent = function(cands)
     {
+        $('#manage-data-btn').prop('disabled', true);
         // put a reference to external method for parsing the data here
 
         // extract event name

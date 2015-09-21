@@ -24,6 +24,10 @@
         <script type="text/javascript"
                 src="lib/bootstrap-waitingfor.js"></script>
 
+        <!-- Third party libraries -->
+        <script type="text/javascript"
+                src="lib/dropzone/dist/dropzone.js"></script>
+
         <!-- Three.js library and controls -->
         <script type="text/javascript" src="lib/three.min.js"></script>
         <script type="text/javascript" src="lib/TrackballControls.js"></script>
@@ -36,6 +40,7 @@
         <!-- Application code -->
         <script type="text/javascript" src="js/candidate.js"></script>
         <script type="text/javascript" src="js/events.js"></script>
+        <script type="text/javascript" src="js/uploader.js"></script>
         <script type="text/javascript" src="js/geometry.js"></script>
         <script type="text/javascript" src="js/camera.js"></script>
         <script type="text/javascript" src="js/controls.js"></script>
@@ -51,40 +56,53 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"
-                                aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="gridSystemModalLabel">Data Cuts</h4>
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="gridSystemModalLabel">
+                            Data Cuts
+                        </h4>
                     </div>
                     <div class="modal-body">
                         <form id="cuts-form" class="form-horizontal">
                             <div class="col-sm-6">
                                 <h3>Candidate Requirements</h3>
                                 <div class="form-group">
-                                    <label for="track-pt-min" class="control-label col-sm-2">
+                                    <label for="track-pt-min"
+                                           class="control-label col-sm-2">
                                         p<sub>T</sub>
                                     </label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="track-pt-min"
-                                               name="track-pt-min" placeholder="min pt"/>
+                                        <input id="track-pt-min" type="text"
+                                               class="form-control"
+                                               name="track-pt-min" 
+                                               placeholder="min pt"/>
                                     </div>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="track-pt-max"
-                                               name="track-pt-max" placeholder="max pt"/>
+                                        <input id="track-pt-max" type="text"
+                                               class="form-control" 
+                                               name="track-pt-max"
+                                               placeholder="max pt"/>
                                     </div>
                                     <div class="col-sm-2">
                                         <p class="form-control-static">GeV</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="track-eta-min" class="control-label col-sm-2">
+                                    <label for="track-eta-min"
+                                           class="control-label col-sm-2">
                                         &eta;
                                     </label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="track-eta-min"
-                                               name="track-eta-min" placeholder="min &eta;"/>
+                                        <input id="track-eta-min" type="text"
+                                               class="form-control" 
+                                               name="track-eta-min"
+                                               placeholder="min &eta;"/>
                                     </div>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" id="track-eta-max"
-                                               name="track-eta-max" placeholder="max &eta;"/>
+                                               name="track-eta-max"
+                                               placeholder="max &eta;"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -93,11 +111,13 @@
                                     </label>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" id="track-stubs-min"
-                                               name="track-stubs-min" placeholder="min stubs"/>
+                                               name="track-stubs-min"
+                                               placeholder="min stubs"/>
                                     </div>
                                     <div class="col-sm-4">
                                         <input type="text" class="form-control" id="track-stubs-max"
-                                               name="track-stubs-max" placeholder="max stubs"/>
+                                               name="track-stubs-max"
+                                               placeholder="max stubs"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -145,32 +165,42 @@
                             <div class="col-sm-6">
                                 <h3>True particle Requirements</h3>
                                 <div class="form-group">
-                                    <label for="tp-pt-min" class="control-label col-sm-2">
+                                    <label for="tp-pt-min"
+                                           class="control-label col-sm-2">
                                         p<sub>T</sub>
                                     </label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="tp-pt-min"
-                                               name="tp-pt-min" placeholder="min pt"/>
+                                        <input  id="tp-pt-min" type="text"
+                                                class="form-control"
+                                                name="tp-pt-min"
+                                                placeholder="min pt"/>
                                     </div>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="tp-pt-max"
-                                               name="tp-pt-max" placeholder="max pt"/>
+                                        <input id="tp-pt-max" type="text"
+                                               class="form-control" 
+                                               name="tp-pt-max"
+                                               placeholder="max pt"/>
                                     </div>
                                     <div class="col-sm-2">
                                         <p class="form-control-static">GeV</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="tp-eta-min" class="control-label col-sm-2">
+                                    <label for="tp-eta-min"
+                                           class="control-label col-sm-2">
                                         &eta;
                                     </label>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="tp-eta-min"
-                                               name="tp-eta-min" placeholder="min &eta;"/>
+                                        <input id="tp-eta-min" type="text"
+                                               class="form-control" 
+                                               name="tp-eta-min"
+                                               placeholder="min &eta;"/>
                                     </div>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="tp-eta-max"
-                                               name="tp-eta-max" placeholder="max &eta;"/>
+                                        <input id="tp-eta-max" type="text"
+                                               class="form-control" 
+                                               name="tp-eta-max"
+                                               placeholder="max &eta;"/>
                                     </div>
                                 </div>
                             </div>
@@ -187,6 +217,68 @@
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
+        </div>
+        <div id="data-man-dialog" class="modal bs-data-man-modal-sm"
+             tabindex="-1" role="dialog"
+             aria-labelledby="mySmallModalLabel2">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="gridSystemModalLabel">
+                            Data Config
+                        </h4>
+                    </div>
+                    <div class="modal-body" role="group">
+                        <!-- nav tabs -->
+                        <ul id="data-tabs" class="nav nav-pills" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#local" role="tab"
+                                   aria-controls="local">Local</a>
+                            </li>
+                            <li role="presentation" class="">
+                                <a href="#remote" role="tab"
+                                   aria-controls="remote">Remote</a>
+                            </li>                            
+                        </ul>
+                        <hr />
+
+                        <!-- tab panes -->
+                        <div class="tab-content">
+                            <div id="local" "role="tabpanel"
+                                 class="tab-pane active">
+                                <div id="upload-area">
+                                    Drop files or click to select local files.
+                                </div>
+                                <div class="hide">
+                                    <input id="data-file" type="file"
+                                           name="files[]" multiple />
+                                </div>  
+                                <h5>Available files</h5>
+                                <div id="local-event-files-list-container"></div>
+                            </div>
+                            <div id="remote" "role="tabpanel" class="tab-pane">
+                                <div>
+                                    Available files at [remote-location]:
+                                    <div id="remote-event-files-list-container"></div>
+                                </div>
+                            </div>                            
+                        </div>
+                        <hr/>
+                        <output id="upload-result"></output>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default"
+                                data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary"
+                                id="load-data-btn">Load Data</button>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
         </div>
         <div id="pleaseWaitDialog" class="modal hide" data-backdrop="static"
              data-keyboard="false">
@@ -226,18 +318,22 @@
                                         data-target=".bs-example-modal-sm">
                                     Data cuts
                                 </button>
+                                <button id="manage-data-btn"
+                                        type="button" data-toggle="modal" 
+                                        class="btn btn-sm btn-default pull-right"
+                                        data-target=".bs-data-man-modal-sm">
+                                    Manage Data
+                                </button>
+                                <!-- 
                                 <input type="button"
                                        class="btn btn-default btn-sm pull-right"
                                        value="Load Data" onclick="loadData();"/>
-                                <hr/>
-                                <span>Files list:</span>
-                                <div id="event-files-list-container"></div>
-                                <hr/>
-                                
+                                 -->
                             </div>
 
                             <div id="cand-table-container">
-                                <table id="candidates-table" class="table table-condensed table-hover tablesorter">
+                                <table id="candidates-table"
+                                       class="table table-condensed table-hover tablesorter">
                                     <thead>
                                         <tr>
                                             <th></th>
