@@ -260,7 +260,10 @@ $(function(){
             reader.onload = (function(f_ref){
                 return function (e) {
                     var str_data = reader.result;
-                    var json_str = str_data.substr(20, str_data.length - 22);
+                    var json_str = str_data.substring(20, str_data.length - 1);
+
+                    console.log(json_str);
+                    console.log(str_data.length);
 
                     var external_data = $.parseJSON(json_str);
                     document.external_data = external_data;
