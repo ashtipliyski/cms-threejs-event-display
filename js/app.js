@@ -63,8 +63,8 @@ $(function() {
         renderer.setClearColor(0xffffff);
         renderer.setSize(scene_width, scene_height);
         
-        container.addEventListener('mousedown', onSceneMouseDown, false);
-        container.addEventListener('mousemove', onSceneMouseMove, false);
+        // container.addEventListener('mousedown', onSceneMouseDown, false);
+        // container.addEventListener('mousemove', onSceneMouseMove, false);
 
         window.addEventListener('resize', onWindowResize, false);
         
