@@ -442,15 +442,42 @@ $(function() {
         camera.updateProjectionMatrix();
     };
 
-    document.visualiseEvent = function(cands)
+    document.unloadEvent = function()
     {
+        $('#candidates-table tbody').html();
+
+        console.log("unloading event");
+
+        for (var i in document.event.candidates) {
+            console.log("removing candidate from scene");
+            scene.remove(document.event.candidates[i].tjs_obj);
+        }
+
+        render();
+    };        
+
+    document.visualiseEvent = function(event_id)
+    {
+        if (document.external_data.events.length < event_id + 1) {
+            console.err("Event requested is out of range.");
+            return;
+        }
+
+        if (document.external_data.events.length > 1 &&
+            event_id != document.external_data.events.length) {
+            $('#next-event-btn').prop('disabled', false);
+        }
+        
+        $("#current-event-container").text(
+            document.current_event + 1 + " / " + document.external_data.events.length
+        );
         $('#manage-data-btn').prop('disabled', true);
         // put a reference to external method for parsing the data here
 
         // extract event name
         
         // extract reconstructions
-        var candidates_list = cands;
+        var candidates_list = document.external_data.events[event_id].candidates;
         $("#cands-no").text(" (" + candidates_list.length + ")");
 
         document.event = {};
@@ -518,9 +545,13 @@ $(function() {
                 success: function(data) {
                     console.log("Data successfuly loaded from " + full_filename);
 
-                    document.visualiseEvent(external_data.candidates);
 
                     document.external_data = external_data;
+                    document.current_event = 0;
+                    
+                    document.visualiseEvent(document.current_event);
+
+                    $("#current-event-container").text(document.current_event + 1);
                     
                     waitingDialog.hide();
 

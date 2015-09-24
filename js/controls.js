@@ -264,7 +264,10 @@ $(function(){
 
                     var external_data = $.parseJSON(json_str);
                     document.external_data = external_data;
-                    document.visualiseEvent(external_data.candidates);
+                    
+                    document.current_event = 0;
+                    document.visualiseEvent(document.current_event);
+
                 };
             })(file);
 
@@ -275,5 +278,41 @@ $(function(){
         }
 
         $('#data-man-dialog').modal('hide');
+    });
+
+    $("#next-event-btn").click(function(e) {
+        if (document.current_event + 1 == document.external_data.events.length) {
+            return;
+        }
+
+        $("#prev-event-btn").prop('disabled', false);
+
+        document.current_event += 1;
+
+        document.unloadEvent();        
+        document.visualiseEvent(document.current_event);
+
+        if (document.current_event + 1 == document.external_data.events.length) {
+            console.log("disabling button");
+            $(this).prop('disabled', true);
+        }
+    });
+
+    $("#prev-event-btn").click(function(e) {
+        if (document.current_event == 0) {
+            return;
+        }
+        
+        document.current_event -= 1;
+        
+        $("#next-event-btn").prop('disabled', false);
+
+        document.unloadEvent();
+        document.visualiseEvent(document.current_event);
+
+        if (document.current_event == 0) {
+            console.log("disabling button");
+            $(this).prop('disabled', true);
+        }
     });
 });
