@@ -375,19 +375,28 @@
                                 </table>
                             </div>
                             <div id="visibility-controls-container" class="panel-body">
-                                <input type="button" class="btn btn-default btn-sm" value="Hide All" onclick="hideAll();"/>
-                                <input type="button" class="btn btn-default btn-sm" value="Show All" onclick="showAll();"/>
-                                <input type="button" class="btn btn-default btn-sm" value="Show Highlighted" onclick="showHighlighted();"/>
+                                <input type="button" value="Hide All"
+                                       class="btn btn-default btn-sm"
+                                       onclick="hideAll();"/>
+                                <input type="button" value="Show All"
+                                       class="btn btn-default btn-sm"
+                                       onclick="showAll();"/>
+                                <input type="button" value="Show Selected"
+                                       class="btn btn-default btn-sm"
+                                       onclick="showHighlighted();"/>
                             </div>                          
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="geometry-controls">
-                        
+                    <div id="geometry-controls"
+                         role="tabpanel" class="tab-pane" >                        
                         <h4>View Controls:</h4>
                         <div class="btn-group btn-group-sm">
-                            <input type="button" class="btn btn-default" value="x-y" onclick="lookXY();"/>
-                            <input type="button" class="btn btn-default" value="x-z" onclick="lookXZ();"/>
-                            <input type="button" class="btn btn-default" value="y-z" onclick="lookYZ();"/>
+                            <input type="button" class="btn btn-default"
+                                   value="x-y" onclick="lookXY();"/>
+                            <input type="button" class="btn btn-default"
+                                   value="x-z" onclick="lookXZ();"/>
+                            <input type="button" class="btn btn-default"
+                                   value="y-z" onclick="lookYZ();"/>
                         </div>
                         <div>
                             Zoom:

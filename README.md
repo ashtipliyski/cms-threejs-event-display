@@ -11,7 +11,7 @@ Currently the application supports three distinct event elements - **stub** (det
 
 ### Loading data
 
-Usage of the application starts with the loading of an external data file. The application currently allows for the use of both local and remote data files. The remote files can be uploaded over (s)FTP and are stored in the /events folder relative to the application root. Local files can be loaded from the user's computer but the functionality requires a HTML5 compatible browser as it relies on the FILE API introduced in HTML5. 
+Usage of the application starts with the loading of an external data file. The application currently allows for the use of both local and remote data files. The remote files can be uploaded over (s)FTP and are stored in the /events folder relative to the application root. Local files can be loaded from the user's computer but the functionality requires a HTML5 compatible browser as it relies on the File API introduced in HTML5. 
 
 The data file can be specified from Event -> Manage Data and using the appropriate interfaces to select a remote file or load a local one. 
 

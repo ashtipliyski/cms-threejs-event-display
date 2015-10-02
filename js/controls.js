@@ -262,6 +262,8 @@ $(function(){
                     var str_data = reader.result;
                     var json_str = str_data.substring(20, str_data.length - 1);
 
+                    console.log(json_str);
+
                     var external_data = $.parseJSON(json_str);
                     document.external_data = external_data;
                     
