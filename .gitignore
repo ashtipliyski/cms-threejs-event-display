@@ -2,4 +2,6 @@ events/*
 geometry/*
 lib/*
 _resources
+writeup
+*.wiki
 *~

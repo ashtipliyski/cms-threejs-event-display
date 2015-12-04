@@ -12,7 +12,7 @@ The main component of the UI holding information about the event is the is the *
 - **p<sub>T</sub>**: Transverse momentum of candidate measured in GeV/c
 - **q**: Electric charge of candidate, measured in units of elementary charge, e
 - **&eta;**: Pseudo-rapidity of candidate
-- **&phi;<sub>0</sub>**: Azimuthal angle of the initial particle momentum with z axis
+- **&phi;<sub>0</sub>**: Initial azimuthal angle of the particle
 - **S<sub>&phi;</sub>**: &phi; segment of the detector to which the candidate is assigned
 - **R<sub>&eta;</sub>**: &eta region of the detector to which the candidate is assigned
 
@@ -49,7 +49,7 @@ The Focus Information panel is located in the lower left corner of the applicati
 
 - **track ID**: Unique identifier of the candidate
 - **p<sub>T</sub>**: Transverse momentum of candidate in GeV/c
-- **&phi;<sub>0</sub>**: Azimuthal angle between the initial candidate momentum and z axis
+- **&phi;<sub>0</sub>**: Initial azimuthal angle of candidate
 - **&eta;**: Pseudo-rapidity of the candidate
 - **&chi;<sup>2</sup><sub>red</sub>**: Reduced &chi;<sup>2</sup> (goodness of fit) parameter for reconstructed candidate
 - **n<sub>p</sub>**: Number of points used to generate the trajectory
