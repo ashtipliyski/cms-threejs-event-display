@@ -145,6 +145,37 @@ Candidate.prototype.get_info_text = function ()
     return r_text;
 };
 
+Candidate.prototype.show_stubs = function ()
+{
+
+    for( var key in this.stubs)
+    {
+        var obj = this.stubs[key];
+        
+        var x = obj.coords[0];
+        var y = obj.coords[1];
+        var z = obj.coords[2];
+        
+        var s_geometry = new THREE.SphereGeometry(3, 20, 20);
+        var s_color = 0x000000;
+        
+        if (!obj.genuine) {
+            s_color = 0xff0000;
+        }
+        
+        var stub = new THREE.Mesh(
+            s_geometry,
+            new THREE.MeshBasicMaterial({color: s_color})
+        );
+        stub.position.set(x, y, z);
+
+        this.scene.add(stub);
+
+        this.stub_obj_list.push(stub);
+        document.event.stubs.push(stub);
+    }
+};
+
 Candidate.prototype.show_info = function ()
 {
     // change reference to this.scene

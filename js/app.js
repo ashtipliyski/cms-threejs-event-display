@@ -60,7 +60,8 @@ $(function() {
         scene.add(beam_line);
 
         renderer = new THREE.WebGLRenderer();
-        renderer.setClearColor(0xffffff);
+        // renderer.setClearColor(0x000000); // background colour black
+        renderer.setClearColor(0xffffff); // background colour white
         renderer.setSize(scene_width, scene_height);
         
         // container.addEventListener('mousedown', onSceneMouseDown, false);
@@ -448,10 +449,14 @@ $(function() {
 
         console.log("unloading event");
 
+        console.log("removing elements from scene");
         for (var i in document.event.candidates) {
             console.log("removing candidate from scene");
             scene.remove(document.event.candidates[i].tjs_obj);
         }
+
+        console.log("removing elements from data table");
+        document.clear_datatable();
 
         render();
     };        
@@ -692,6 +697,23 @@ $(function() {
         }
 
         render();
+    };
+
+    document.showAllStubs = function ()
+    {
+        for (var j in document.event.candidates)
+        {
+            // document.event.candidates[j].show_info();
+            // document.event.candidates[j].hide_info();
+            // console.log(document.event.candidates[j]);
+            document.event.candidates[j].show_stubs();
+        }
+
+        render();
+    };
+
+    document.hideAllStubs = function () {
+
     };
 
 

@@ -106,6 +106,14 @@ $(function(){
         $('[data-toggle="tooltip"]').tooltip({container:'body'});
     };
 
+    document.clear_datatable = function ()
+    {
+        $("#candidates-table tbody tr").each(function(i) {
+            console.log(this);
+            $(this).remove();
+        });
+    };
+
     document.add_candidate = function (cand)
     {
         /**
